@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEG NEG 搶票工具 🎟️</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --border: #2a2a3a;
+    --accent: #7c5cfc;
+    --accent2: #fc5c7d;
+    --gold: #f5c518;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --sc: #fc5c7d;
+    --gr: #5cfc8a;
+    --gs: #5cb8fc;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(252,92,125,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 0 32px;
+    text-align: center;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    font-family: 'Space Mono', monospace;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 900;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* Version */
+  .version-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .version-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #5cfc8a;
+    box-shadow: 0 0 8px #5cfc8a;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .version-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .version-text strong { color: var(--text); }
+
+  /* Section */
+  .section {
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-family: 'Space Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  /* SOP Steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    border-bottom: none;
+    transition: background 0.2s;
+  }
+  .step:first-child { border-radius: 16px 16px 0 0; }
+  .step:last-child { border-radius: 0 0 16px 16px; border-bottom: 1px solid var(--border); }
+  .step:hover { background: #1a1a28; }
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+  }
+  .step-content { flex: 1; }
+  .step-title {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .step-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .step-desc code {
+    background: rgba(124,92,252,0.2);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+  }
+  .step-warn {
+    margin-top: 8px;
+    background: rgba(252,92,125,0.1);
+    border: 1px solid rgba(252,92,125,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--accent2);
+  }
+  .step-tip {
+    margin-top: 8px;
+    background: rgba(245,197,24,0.1);
+    border: 1px solid rgba(245,197,24,0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--gold);
+  }
+
+  /* Script box */
+  .script-box {
+    background: #080810;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .script-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #0f0f1a;
+    border-bottom: 1px solid var(--border);
+  }
+  .script-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .script-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .copy-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: opacity 0.2s;
+  }
+  .copy-btn:hover { opacity: 0.85; }
+  .copy-btn.copied { background: #5cfc8a; color: #000; }
+  .script-code {
+    padding: 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #a0a0c0;
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 300px;
+    overflow-y: auto;
+    line-height: 1.6;
+  }
+
+  /* Seat map */
+  .ticket-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .ticket-type {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .ticket-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+  }
+  .ticket-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .ticket-price { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .ticket-zones { font-size: 10px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  .zones-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .zone-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid;
+  }
+  .zone-sc { background: rgba(252,92,125,0.1); border-color: rgba(252,92,125,0.4); color: var(--sc); }
+  .zone-gr { background: rgba(92,252,138,0.1); border-color: rgba(92,252,138,0.4); color: var(--gr); }
+  .zone-gs { background: rgba(92,184,252,0.1); border-color: rgba(92,184,252,0.4); color: var(--gs); }
+
+  /* Notes */
+  .note-list { display: flex; flex-direction: column; gap: 10px; }
+  .note-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .note-icon { flex-shrink: 0; font-size: 16px; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 40px 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="badge">🎟 TICKET TOOL v1.0</div>
+    <h1>NEG NEG 搶票工具</h1>
+    <p class="subtitle">2026 ARIRANG CONCERT TOUR</p>
+  </header>
+
+  <div class="version-bar">
+    <div class="version-dot"></div>
+    <div class="version-text">最新版本 <strong>v1.0</strong> · 更新日期 <strong>2026-07-05</strong> · 適用場次 <strong>Jun 12–13, 2026</strong></div>
+  </div>
+
+  <!-- SOP -->
+  <div class="section">
+    <div class="section-title">📋 使用 SOP</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">登入 NOL World 並進入購票頁面</div>
+          <div class="step-desc">確認已登入帳號，進入演唱會購票頁面，等待排隊進場。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">選擇日期與時間</div>
+          <div class="step-desc">進入後選擇你想要的場次日期（Jul 04 或 Jul 05），點選時間後按 Next。</div>
+          <div class="step-tip">⚡ 日期選好後先不要急著下一步，先準備好腳本</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">出現驗證碼時手動輸入</div>
+          <div class="step-desc">進入座位頁面前可能出現「Secure Booking」驗證碼，需手動輸入圖片中的英文字母，完成後按 Submit。</div>
+          <div class="step-warn">⚠️ 驗證碼無法自動化，請自己看圖輸入，輸錯可重新整理</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">開啟 Chrome 開發者工具</div>
+          <div class="step-desc">進入座位選擇頁面後，按 <code>F12</code> 開啟 DevTools，點選上方 <code>Console</code> 分頁。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">貼上腳本並執行</div>
+          <div class="step-desc">複製下方腳本，貼到 Console 輸入欄，按 <code>Enter</code> 執行。右下角出現計時器和停止按鈕即代表啟動成功。</div>
+          <div class="step-tip">💡 腳本會自動逐區掃描，找到座位立刻點擊送出</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">等待通知，搶到後立刻付款</div>
+          <div class="step-desc">搶到座位後電腦會響鈴並彈出通知，立刻前往付款頁面完成購票。若遇到 Access Denied，腳本會自動暫停 30 秒後繼續。</div>
+          <div class="step-warn">⚠️ 座位鎖定有時效限制，收到通知請立刻付款！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <div class="section">
+    <div class="section-title">💻 搶票腳本</div>
+    <div class="script-box">
+      <div class="script-header">
+        <div class="script-dots">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div class="script-label">console_script.js · Sound Check 優先</div>
+        <button class="copy-btn" onclick="copyScript(this)">複製腳本</button>
+      </div>
+      <div class="script-code" id="scriptCode">(function(){
+  // ═══════════════════════════════
+  // 參數設定區（可自行調整）
+  // ═══════════════════════════════
+  const AREAS=['002','003','004','005','008','009','010','011',
+               '022','023','024','027','028','029','042','043',
+               '044','045','048','049','050','051','062','063',
+               '064','067','068','069'];  // Sound Check 區域
+  const SCANS_PER_AREA=2;       // 同區掃幾次再換區
+  const QUICK_SCAN_INTERVAL=300; // 換區後掃描間隔(ms)
+  const NO_SEAT_ATTEMPTS=3;      // 沒座位幾次後換區
+  const WHITEPAGE_ATTEMPTS=16;   // 白屏超時次數(約5秒)
+  const ACCESS_DENIED_WAIT=30;   // Access Denied 等待秒數
+  // ═══════════════════════════════
+
+  let currentIndex=0;
+  let areaScanCount=0;
+  let running=true;
+  let submitted=false;
+  let areaTimer;
+  let quickScan;
+  const startTime=Date.now();
+
+  const timerDisplay=document.createElement('div');
+  timerDisplay.style.cssText='position:fixed;bottom:60px;right:20px;z-index:99999;padding:6px 12px;background:rgba(0,0,0,0.7);color:white;border-radius:8px;font-size:13px;font-family:monospace';
+  timerDisplay.innerText='⏱ 00:00';
+  document.body.appendChild(timerDisplay);
+  setInterval(()=>{
+    const elapsed=Math.floor((Date.now()-startTime)/1000);
+    const m=String(Math.floor(elapsed/60)).padStart(2,'0');
+    const s=String(elapsed%60).padStart(2,'0');
+    timerDisplay.innerText=`⏱ ${m}:${s}`;
+  },1000);
+
+  const stopBtn=document.createElement('button');
+  stopBtn.innerText='⏹ 停止';
+  stopBtn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;padding:10px 16px;background:#e74c3c;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)';
+  stopBtn.onclick=()=>{running=false;clearTimeout(areaTimer);clearInterval(quickScan);stopBtn.innerText='✅ 已停止';stopBtn.style.background='#888';};
+  document.body.appendChild(stopBtn);
+
+  const playAlert=()=>{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    osc.type='square';
+    osc.frequency.setValueAtTime(1200,ctx.currentTime);
+    osc.connect(ctx.destination);
+    osc.start();
+    setTimeout(()=>osc.stop(),1500);
+  };
+
+  const handleAccessDenied=()=>{
+    console.log(`Access Denied！暫停${ACCESS_DENIED_WAIT}秒...`);
+    running=false;
+    clearInterval(quickScan);
+    clearTimeout(areaTimer);
+    stopBtn.style.background='#8e44ad';
+    let countdown=ACCESS_DENIED_WAIT;
+    const cdTimer=setInterval(()=>{
+      countdown--;
+      stopBtn.innerText=`🚫 AD (${countdown}s)`;
+      if(countdown<=0){
+        clearInterval(cdTimer);
+        running=true;
+        stopBtn.innerText='⏹ 停止';
+        stopBtn.style.background='#e74c3c';
+        areaScanCount=0;
+        goToArea(currentIndex);
+      }
+    },1000);
+  };
+
+  const nextArea=()=>{
+    if(!running||submitted)return;
+    areaScanCount++;
+    if(areaScanCount<SCANS_PER_AREA){
+      goToAreaScan(currentIndex);
+    }else{
+      areaScanCount=0;
+      const delay=3000+Math.random()*2000;
+      setTimeout(()=>goToArea(currentIndex+1),delay);
+    }
+  };
+
+  const foundSeat=(seat,f)=>{
+    console.log('找到座位！立刻點擊！');
+    clearInterval(quickScan);
+    clearTimeout(areaTimer);
+    seat.click();
+    setTimeout(()=>{
+      submitted=true;
+      running=false;
+      f.defaultView.fnSelect();
+      stopBtn.innerText='⏳ 送出中...';
+      stopBtn.style.background='#f39c12';
+      const checkResult=setInterval(()=>{
+        const priceStep=document.querySelector('div.buy_info');
+        if(priceStep){
+          clearInterval(checkResult);
+          setTimeout(()=>{
+            playAlert();
+            alert('🎉 座位已送出！趕快去付款！');
+            stopBtn.innerText='🎉 已送出！';
+            stopBtn.style.background='#27ae60';
+          },1000);
+          return;
+        }
+        const fCheck=document.getElementById('ifrmSeat').contentDocument;
+        const dialog=fCheck.querySelector('.popup_wrap,.layer_wrap,[class*="popup"],[class*="layer"]');
+        if(dialog&&dialog.offsetParent!==null){
+          clearInterval(checkResult);
+          const closeBtn=dialog.querySelector('a, button');
+          if(closeBtn)closeBtn.click();
+          console.log('座位被搶走，繼續同區...');
+          submitted=false;
+          areaScanCount=0;
+          setTimeout(()=>{running=true;goToAreaScan(currentIndex);},500);
+        }
+      },300);
+      setTimeout(()=>clearInterval(checkResult),5000);
+    },300);
+  };
+
+  const goToAreaScan=(index)=>{
+    if(!running||submitted)return;
+    clearInterval(quickScan);
+    clearTimeout(areaTimer);
+    let attempts=0;
+    quickScan=setInterval(()=>{
+      if(!running||submitted){clearInterval(quickScan);return;}
+      attempts++;
+      try{
+        const f=document.getElementById('ifrmSeat').contentDocument;
+        const f2=f.getElementById('ifrmSeatDetail').contentDocument;
+        const bodyText=f2?.body?.innerText||'';
+        if(bodyText.includes('Access Denied')||bodyText.includes('Forbidden')){
+          clearInterval(quickScan);
+          handleAccessDenied();
+          return;
+        }
+        const seat=f2?.querySelector('span[onclick*="SelectSeat"]');
+        if(seat){clearInterval(quickScan);foundSeat(seat,f);return;}
+        if(attempts>NO_SEAT_ATTEMPTS){clearInterval(quickScan);nextArea();return;}
+        if(attempts>WHITEPAGE_ATTEMPTS){
+          clearInterval(quickScan);
+          console.log('白屏超時，換區...');
+          areaScanCount=0;
+          nextArea();
+          return;
+        }
+      }catch(e){}
+    },QUICK_SCAN_INTERVAL);
+  };
+
+  const goToArea=(index)=>{
+    if(!running||submitted)return;
+    currentIndex=index%AREAS.length;
+    const area=AREAS[currentIndex];
+    console.log(`換區：${area} Side (${currentIndex+1}/${AREAS.length})`);
+    try{
+      const f=document.getElementById('ifrmSeat').contentDocument;
+      f.defaultView.fnBlockSeatUpdate('','',area);
+    }catch(e){console.log('換區錯誤:',e);}
+    goToAreaScan(currentIndex);
+  };
+
+  goToArea(0);
+  console.log(`✅ 掃描啟動！同區掃${SCANS_PER_AREA}次，無座位約1秒換區，白屏5秒換區`);
+})();</div>
+    </div>
+  </div>
+
+  <!-- Seat Zones -->
+  <div class="section">
+    <div class="section-title">🗺️ 座位區域說明</div>
+    <div class="ticket-types">
+      <div class="ticket-type">
+        <div class="ticket-dot" style="background:var(--sc)"></div>
+        <div class="ticket-name" style="color:var(--sc)">SOUND CHECK</div>
+        <div class="ticket-price">264,000 won (₩)</div>
+        <div class="ticket-zones">002–005, 008–011<br>022–024, 027–029<br>042–045, 048–051<br>062–064, 067–069</div>
+      </div>
+      <div class="ticket-type">
+        <div class="ticket-dot" style="background:var(--gr)"></div>
+        <div class="ticket-name" style="color:var(--gr)">GENERAL R</div>
+        <div class="ticket-price">220,000 won (₩)</div>
+        <div class="ticket-zones">007, 012, 026, 030<br>047, 052, 066, 070<br>116–122, 223–231<br>304–306, 332–334<br>407–415</div>
+      </div>
+      <div class="ticket-type">
+        <div class="ticket-dot" style="background:var(--gs)"></div>
+        <div class="ticket-name" style="color:var(--gs)">GENERAL S</div>
+        <div class="ticket-price">198,000 won (₩)</div>
+        <div class="ticket-zones">152–158, 259–268<br>337–341, 369–372<br>442–451</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section">
+    <div class="section-title">⚠️ 注意事項</div>
+    <div class="card">
+      <div class="note-list">
+        <div class="note-item"><span class="note-icon">🔇</span><span>執行腳本前確認瀏覽器音效未靜音，搶到票會響鈴提醒</span></div>
+        <div class="note-item"><span class="note-icon">🚫</span><span>遇到 Access Denied 腳本會自動暫停 30 秒，不需要手動重整頁面</span></div>
+        <div class="note-item"><span class="note-icon">⏱️</span><span>每次進入座位頁面只有約 10 分鐘，請把握時間</span></div>
+        <div class="note-item"><span class="note-icon">💳</span><span>搶到座位後請立刻前往付款，座位鎖定有時效</span></div>
+        <div class="note-item"><span class="note-icon">🔄</span><span>腳本只適用於 Chrome 桌機版，手機版不支援</span></div>
+        <div class="note-item"><span class="note-icon">📵</span><span>搶票期間勿切換分頁或最小化視窗，保持頁面在前景運行</span></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    NEG NEG 搶票工具 · 僅供個人使用 · 祝搶票順利 💜
+  </footer>
+
+</div>
+
+<script>
+function copyScript(btn) {
+  const code = document.getElementById('scriptCode').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.innerText = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerText = '複製腳本';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
