@@ -17,7 +17,8 @@
     _origAlert(msg);
   };
 
-  // 預先建立 AudioContext（必須在用戶互動時建立）
+  // 啟動確認 → 解鎖 iOS 音效
+  _origAlert('✅ 腳本已啟動！點確定開始掃描');
   const AC=window.AudioContext||window.webkitAudioContext;
   const audioCtx=AC?new AC():null;
 
