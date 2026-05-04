@@ -157,6 +157,18 @@
   .note-item { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.5; }
   .note-icon { flex-shrink: 0; font-size: 16px; }
 
+  .filter-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;
+    font-family: 'Space Mono', monospace; transition: all 0.2s;
+  }
+  .filter-btn:not(.active) { opacity: 0.35; }
+  #zoneTable tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  #zoneTable tbody tr:last-child { border-bottom: none; }
+  #zoneTable tbody tr:hover { background: #1a1a28; }
+  #zoneTable tbody tr.hidden { display: none; }
+  #zoneTable td { padding: 9px 16px; font-size: 12px; }
+
   footer { text-align: center; padding: 40px 0; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; }
 </style>
 </head>
@@ -164,14 +176,14 @@
 <div class="container">
 
   <header>
-    <div class="badge">🎟 TICKET TOOL v1.1</div>
+    <div class="badge">🎟 TICKET TOOL v1.2</div>
     <h1>NEG NEG </h1>
     <p class="subtitle">2026 ARIRANG CONCERT TOUR</p>
   </header>
 
 <div class="version-bar">
   <div class="version-dot"></div>
-  <div class="version-text">最新版本 <strong>v1.2</strong> · 更新日期 <strong>2026/5/2</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
+  <div class="version-text">最新版本 <strong>v1.2</strong> · 更新日期 <strong>2026/5/4</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
 </div>
 
 <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:32px;">
@@ -279,59 +291,106 @@
     </div>
   </div>
 
-  <!-- Seat Zones -->
+  <!-- Seat Zones Table -->
   <div class="section">
-    <div class="section-title">🗺️ 座位區域 · 複製後貼入腳本 AREAS</div>
-    <div class="ticket-types">
+    <div class="section-title">🗺️ 座位區域篩選器</div>
 
-      <div class="ticket-type">
-        <div class="ticket-left">
-          <div class="ticket-dot" style="background:#a855f7"></div>
-          <div>
-            <div class="ticket-name" style="color:#a855f7">SOUND CHECK</div>
-            <div class="ticket-price">264,000 won (₩)</div>
+    <!-- Output (moved to top) -->
+    <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">已勾選 <strong id="selectedCount" style="color:var(--text);">0</strong> 區 · 複製後貼入 areas:</span>
+        <button class="copy-btn" onclick="copyAreas(this)">複製 AREAS</button>
+      </div>
+      <div id="areasOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:11px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-panel" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+
+        <!-- 票種 -->
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">票種</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'type','SC')" style="accent-color:#a855f7;width:15px;height:15px;">
+              <span style="color:#a855f7;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">SC</span>
+              <span style="color:var(--muted);font-size:11px;">Sound Check</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'type','GR')" style="accent-color:#5cfc8a;width:15px;height:15px;">
+              <span style="color:#5cfc8a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GR</span>
+              <span style="color:var(--muted);font-size:11px;">General R</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'type','GS')" style="accent-color:#5cb8fc;width:15px;height:15px;">
+              <span style="color:#5cb8fc;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GS</span>
+              <span style="color:var(--muted);font-size:11px;">General S</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" onchange="toggleFilter(this,'type','TEST')" style="accent-color:#f5c518;width:15px;height:15px;">
+              <span style="color:#f5c518;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">TEST</span>
+              <span style="color:var(--muted);font-size:11px;">&TEAM 測試</span>
+            </label>
           </div>
         </div>
-        <div class="ticket-code-wrap" id="sc-code">'002','003','004','005','008','009','010','011','022','023','024','027','028','029','042','043','044','045','048','049','050','051','062','063','064','067','068','069'</div>
-        <button class="zone-copy-btn" onclick="copyZone(this,'sc-code')">複製</button>
-      </div>
 
-      <div class="ticket-type">
-        <div class="ticket-left">
-          <div class="ticket-dot" style="background:var(--gr)"></div>
-          <div>
-            <div class="ticket-name" style="color:var(--gr)">GENERAL R</div>
-            <div class="ticket-price">220,000 won (₩)</div>
+        <!-- 分隔 -->
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+
+        <!-- 方位 -->
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">方位</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'dir','0')" style="accent-color:var(--accent);width:15px;height:15px;">
+              <span style="color:var(--text);font-size:12px;">地面</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'dir','1')" style="accent-color:var(--accent);width:15px;height:15px;">
+              <span style="color:var(--text);font-size:12px;">E 東</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'dir','2')" style="accent-color:var(--accent);width:15px;height:15px;">
+              <span style="color:var(--text);font-size:12px;">N 北</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'dir','3')" style="accent-color:var(--accent);width:15px;height:15px;">
+              <span style="color:var(--text);font-size:12px;">W 西</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'dir','4')" style="accent-color:var(--accent);width:15px;height:15px;">
+              <span style="color:var(--text);font-size:12px;">S 南</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+              <input type="checkbox" checked onchange="toggleFilter(this,'dir','N/A')" style="accent-color:var(--accent);width:15px;height:15px;">
+              <span style="color:var(--text);font-size:12px;">N/A</span>
+            </label>
           </div>
         </div>
-        <div class="ticket-code-wrap" id="gr-code">'007','012','026','030','047','052','066','070','116','117','118','119','120','121','122','223','224','225','226','227','228','229','230','231','304','305','306','332','333','334','407','408','409','410','411','412','413','414','415'</div>
-        <button class="zone-copy-btn" onclick="copyZone(this,'gr-code')">複製</button>
-      </div>
 
-      <div class="ticket-type">
-        <div class="ticket-left">
-          <div class="ticket-dot" style="background:var(--gs)"></div>
-          <div>
-            <div class="ticket-name" style="color:var(--gs)">GENERAL S</div>
-            <div class="ticket-price">198,000 won (₩)</div>
-          </div>
+        <!-- 快速操作 -->
+        <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-self:flex-end;">
+          <button onclick="filterAll()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;white-space:nowrap;">全選篩選</button>
+          <button onclick="filterNone()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;white-space:nowrap;">全消篩選</button>
         </div>
-        <div class="ticket-code-wrap" id="gs-code">'152','153','154','155','156','157','158','259','260','261','262','263','264','265','266','267','268','337','338','339','340','341','369','370','371','372','442','443','444','445','446','447','448','449','450','451'</div>
-        <button class="zone-copy-btn" onclick="copyZone(this,'gs-code')">複製</button>
-      </div>
 
-      <div class="ticket-type" style="border-color:#f5c51855;">
-        <div class="ticket-left">
-          <div class="ticket-dot" style="background:var(--gold)"></div>
-          <div>
-            <div class="ticket-name" style="color:var(--gold)">&TEAM（測試用）</div>
-            <div class="ticket-price">測試區域</div>
-          </div>
-        </div>
-        <div class="ticket-code-wrap" id="test-code">'201','202','203','204','205','206','207','208','209','210','211','212','213','214','215','001','002','003','004','005','308','309','310','311','312','313','314'</div>
-        <button class="zone-copy-btn" onclick="copyZone(this,'test-code')">複製</button>
       </div>
+    </div>
 
+    <!-- Table -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;" id="zoneTable">
+        <thead>
+          <tr style="background:#0f0f1a;border-bottom:1px solid var(--border);">
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">區號</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">方位</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">票種</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">座位數</th>
+          </tr>
+        </thead>
+        <tbody id="zoneTableBody"></tbody>
+      </table>
     </div>
   </div>
 
@@ -415,14 +474,103 @@ function copyScript(btn) {
   });
 }
 
-function copyZone(btn, id) {
-  const text = '[' + document.getElementById(id).innerText + ']';
+// ── 座位篩選器 ──
+const ZONES = [
+  // Sound Check (地面)
+  ...['002','003','004','005','008','009','010','011','022','023','024','027','028','029','042','043','044','045','048','049','050','051','062','063','064','067','068','069'].map(z=>({zone:z,type:'SC',dir:'0'})),
+  // General R
+  ...['007','012','026','030','047','052','066','070'].map(z=>({zone:z,type:'GR',dir:'0'})),
+  ...['116','117','118','119','120','121','122'].map(z=>({zone:z,type:'GR',dir:'1'})),
+  ...['223','224','225','226','227','228','229','230','231'].map(z=>({zone:z,type:'GR',dir:'2'})),
+  ...['304','305','306','332','333','334'].map(z=>({zone:z,type:'GR',dir:'3'})),
+  ...['407','408','409','410','411','412','413','414','415'].map(z=>({zone:z,type:'GR',dir:'4'})),
+  // General S
+  ...['152','153','154','155','156','157','158'].map(z=>({zone:z,type:'GS',dir:'1'})),
+  ...['259','260','261','262','263','264','265','266','267','268'].map(z=>({zone:z,type:'GS',dir:'2'})),
+  ...['337','338','339','340','341','369','370','371','372'].map(z=>({zone:z,type:'GS',dir:'3'})),
+  ...['442','443','444','445','446','447','448','449','450','451'].map(z=>({zone:z,type:'GS',dir:'4'})),
+  // TEST (&TEAM)
+  ...['005','308','309','310','311','312','313','314'].map(z=>({zone:z,type:'TEST',dir:'N/A'})),
+];
+
+const DIR_MAP = {'0':'地面','1':'E 東','2':'N 北','3':'W 西','4':'S 南','N/A':'N/A'};
+const TYPE_COLOR = {'SC':'#a855f7','GR':'#5cfc8a','GS':'#5cb8fc','TEST':'#f5c518'};
+const activeFilters = {type:new Set(['SC','GR','GS']), dir:new Set(['0','1','2','3','4','N/A'])};
+
+function buildTable() {
+  const tbody = document.getElementById('zoneTableBody');
+  tbody.innerHTML = '';
+  ZONES.forEach(({zone,type,dir}) => {
+    const tr = document.createElement('tr');
+    tr.dataset.type = type;
+    tr.dataset.dir = dir;
+    tr.dataset.zone = zone;
+    tr.innerHTML = `
+      <td style="font-family:'Space Mono',monospace;font-weight:700;">${zone}</td>
+      <td style="color:var(--muted);font-size:12px;">${DIR_MAP[dir]||dir}</td>
+      <td><span style="color:${TYPE_COLOR[type]};font-family:'Space Mono',monospace;font-size:11px;font-weight:700;">${type}</span></td>
+      <td style="color:var(--muted);font-size:12px;">-</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateOutput();
+}
+
+function toggleFilter(cb, filterType, val) {
+  if(cb.checked) activeFilters[filterType].add(val);
+  else activeFilters[filterType].delete(val);
+  applyFilters();
+}
+
+function filterAll() {
+  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb => {
+    // TEST 的 checkbox 不勾選
+    if(cb.closest('label')?.innerText.includes('TEST')) cb.checked = false;
+    else cb.checked = true;
+  });
+  activeFilters.type = new Set(['SC','GR','GS']);
+  activeFilters.dir = new Set(['0','1','2','3','4','N/A']);
+  applyFilters();
+}
+
+function filterNone() {
+  document.querySelectorAll('#zoneTableBody tr').forEach(row => row.classList.add('hidden'));
+  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb => cb.checked = false);
+  activeFilters.type = new Set();
+  activeFilters.dir = new Set();
+  updateOutput();
+}
+
+function applyFilters() {
+  document.querySelectorAll('#zoneTableBody tr').forEach(row => {
+    const show = activeFilters.type.has(row.dataset.type) && activeFilters.dir.has(row.dataset.dir);
+    row.classList.toggle('hidden', !show);
+  });
+  updateOutput();
+}
+
+function updateOutput() {
+  const zones = [];
+  document.querySelectorAll('#zoneTableBody tr:not(.hidden)').forEach(row => {
+    zones.push("'"+row.dataset.zone+"'");
+  });
+  document.getElementById('selectedCount').innerText = zones.length;
+  document.getElementById('areasOutput').innerText = zones.length
+    ? `[${zones.join(',')}]`
+    : '（目前無符合篩選條件的區域）';
+}
+
+function copyAreas(btn) {
+  const text = document.getElementById('areasOutput').innerText;
+  if(text.includes('無符合')) return;
   navigator.clipboard.writeText(text).then(() => {
-    btn.innerText = '✅ 已複製';
+    btn.innerText = '✅ 已複製！';
     btn.classList.add('copied');
-    setTimeout(() => { btn.innerText = '複製'; btn.classList.remove('copied'); }, 2000);
+    setTimeout(() => { btn.innerText = '複製 AREAS'; btn.classList.remove('copied'); }, 2000);
   });
 }
+
+buildTable();
 </script>
 </body>
 </html>
