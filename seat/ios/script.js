@@ -1,5 +1,4 @@
 (function(){
-  // 從 Bookmarklet 讀取參數，沒有就用預設值
   const cfg=window.NEGNEG_CONFIG||{};
   const AREAS=cfg.areas||['002','003','004','005'];
   const SCANS_PER_AREA=cfg.scans_per_area||2;
@@ -16,6 +15,26 @@
       return;
     }
     _origAlert(msg);
+  };
+
+  // 預先建立 AudioContext（必須在用戶互動時建立）
+  const AC=window.AudioContext||window.webkitAudioContext;
+  const audioCtx=AC?new AC():null;
+
+  const playAlert=()=>{
+    try{
+      if(!audioCtx)return;
+      if(audioCtx.state==='suspended')audioCtx.resume();
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      osc.type='square';
+      osc.frequency.setValueAtTime(1200,audioCtx.currentTime);
+      gain.gain.setValueAtTime(1.0,audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      setTimeout(()=>osc.stop(),1500);
+    }catch(e){console.log('Audio Error');}
   };
 
   let currentIndex=0;
@@ -42,16 +61,6 @@
   stopBtn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;padding:10px 16px;background:#e74c3c;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)';
   stopBtn.onclick=()=>{running=false;clearTimeout(areaTimer);clearInterval(quickScan);stopBtn.innerText='✅ 已停止';stopBtn.style.background='#888';};
   document.body.appendChild(stopBtn);
-
-  const playAlert=()=>{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const osc=ctx.createOscillator();
-    osc.type='square';
-    osc.frequency.setValueAtTime(1200,ctx.currentTime);
-    osc.connect(ctx.destination);
-    osc.start();
-    setTimeout(()=>osc.stop(),1500);
-  };
 
   const handleAccessDenied=()=>{
     console.log(`Access Denied！暫停${ACCESS_DENIED_WAIT}秒...`);
