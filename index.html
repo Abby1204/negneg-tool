@@ -212,7 +212,7 @@
     <p class="subtitle">2026 ARIRANG CONCERT TOUR</p>
   </header>
 
-<div class="version-bar">
+  <div class="version-bar">
   <div class="version-dot"></div>
   <div class="version-text">最新版本 <strong>v2.0</strong> · 更新日期 <strong>2026/5/4</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
 </div>
@@ -395,8 +395,8 @@
     <div class="section-title">🔖 Bookmarklet 產生器</div>
     <div class="card">
       <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
-        填好參數後點「產生」，複製結果存進書籤網址欄。<br>
-        <span style="color:var(--gold);">areas 會自動帶入下方座位篩選器的結果。</span>
+        填好參數後，複製下方結果存進書籤網址欄。<br>
+        <span style="color:var(--gold);">areas 會自動帶入下方 Desktop tab 座位篩選器的結果。</span>
       </div>
 
       <!-- 腳本來源 -->
@@ -422,7 +422,7 @@
       </div>
 
       <!-- 參數 -->
-      <div style="margin-bottom:16px;">
+      <div>
         <div class="bm-param">
           <label>scans_per_area</label>
           <div style="display:flex;align-items:center;">
@@ -448,7 +448,7 @@
           <label>whitepage_attempts</label>
           <div style="display:flex;align-items:center;">
             <input type="number" id="bm_white" value="16" min="1" max="50" oninput="generateBM()">
-            <span class="param-desc">白屏超時次數(16 = 大約5秒) </span>
+            <span class="param-desc">白屏超時次數</span>
           </div>
         </div>
         <div class="bm-param">
@@ -460,18 +460,15 @@
         </div>
       </div>
 
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <button class="copy-btn" onclick="copyBM(this)" id="copyBMBtn" style="width:100%;">複製 Bookmarklet</button>
-      </div>
-
     </div>
 
     <!-- Output -->
     <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
-      <div style="padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
         <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">產生結果 · 複製後存入書籤網址欄</span>
+        <button class="copy-btn" onclick="copyBM(this)" id="copyBMBtn">複製</button>
       </div>
-      <div id="bmOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;">（點「產生 Bookmarklet」）</div>
+      <div id="bmOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;">（請先至 Desktop tab 設定座位篩選）</div>
     </div>
   </div>
 
@@ -481,14 +478,9 @@
   <div class="section">
     <div class="section-title">🗺️ 座位區域篩選器</div>
 
-    <!-- Output (moved to top) -->
-    <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">已勾選 <strong id="selectedCount" style="color:var(--text);">0</strong> 區 · 複製後貼入 areas:</span>
-        <button class="copy-btn" onclick="copyAreas(this)">複製 AREAS</button>
-      </div>
-      <div id="areasOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:11px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
-    </div>
+    <!-- Hidden output for BM generator to read -->
+    <div id="areasOutput" style="display:none;"></div>
+    <div id="selectedCount" style="display:none;"></div>
 
     <!-- Filters -->
     <div class="filter-panel" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px;">
