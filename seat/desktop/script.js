@@ -2,11 +2,8 @@
   // ═══════════════════════════════
   // 參數設定區（可自行調整）
   // ═══════════════════════════════
-  const AREAS=['002','003','004','005','008','009','010','011',
-               '022','023','024','027','028','029','042','043',
-               '044','045','048','049','050','051','062','063',
-               '064','067','068','069'];
-  const SCANS_PER_AREA=2;      // 同區掃幾次再換區
+  const AREAS=['004','005','009','010','011','023','024','028','029','042','045','050','051','063','064','068','069'];
+  const SCANS_PER_AREA=1;      // 同區掃幾次再換區
   const QUICK_SCAN_INTERVAL=300;
   const NO_SEAT_ATTEMPTS=3;    // 每次掃描等幾次找不到座位就算沒座位
   const WHITEPAGE_ATTEMPTS=16; // 白屏超時次數（約5秒）
@@ -135,15 +132,7 @@
     clearInterval(quickScan);
     clearTimeout(areaTimer);
 
-    // ── 座位統計開始（用完刪除這段）──
-    try{
-      const f=document.getElementById('ifrmSeat').contentDocument;
-      const f2=f.getElementById('ifrmSeatDetail').contentDocument;
-      const available=f2.querySelectorAll('span[onclick*="SelectSeat"]').length;
-      const total=f2.querySelectorAll('span[class*="Seat"]').length;
-      console.log(`區域：${AREAS[index]} | 可用：${available} / 總格子：${total}`);
-    }catch(e){}
-    // ── 座位統計結束（用完刪除這段）──
+
 
     let attempts=0;
     quickScan=setInterval(()=>{
@@ -158,6 +147,20 @@
           handleAccessDenied();
           return;
         }
+
+
+    // ── 座位統計開始（用完刪除這段）──
+    try{
+      const f=document.getElementById('ifrmSeat').contentDocument;
+      const f2=f.getElementById('ifrmSeatDetail').contentDocument;
+      const available=f2.querySelectorAll('span[onclick*="SelectSeat"]').length;
+      const total=f2.querySelectorAll('span[class*="Seat"]').length;
+      console.log(`區域：${AREAS[index]} | 可用：${available} / 總格子：${total}`);
+    }catch(e){}
+    // ── 座位統計結束（用完刪除這段）──
+
+
+
         const seat=f2?.querySelector('span[onclick*="SelectSeat"]');
         if(seat){clearInterval(quickScan);foundSeat(seat,f);return;}
         if(attempts>NO_SEAT_ATTEMPTS){clearInterval(quickScan);nextArea();return;}
