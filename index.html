@@ -199,6 +199,11 @@
   #zoneTable tbody tr:hover { background: #1a1a28; }
   #zoneTable tbody tr.hidden { display: none; }
   #zoneTable td { padding: 9px 16px; font-size: 12px; }
+  #iosZoneTableBody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+  #iosZoneTableBody tr:last-child { border-bottom: none; }
+  #iosZoneTableBody tr:hover { background: #1a1a28; }
+  #iosZoneTableBody tr.hidden { display: none; }
+  #iosZoneTableBody td { padding: 9px 16px; font-size: 12px; }
 
   footer { text-align: center; padding: 40px 0; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; }
 </style>
@@ -207,14 +212,14 @@
 <div class="container">
 
   <header>
-    <div class="badge">🎟 TICKET TOOL v2.0</div>
+    <div class="badge">🎟 TICKET TOOL v2.1</div>
     <h1>NEG NEG </h1>
     <p class="subtitle">2026 ARIRANG CONCERT TOUR</p>
   </header>
 
   <div class="version-bar">
   <div class="version-dot"></div>
-  <div class="version-text">最新版本 <strong>v2.0</strong> · 更新日期 <strong>2026/5/4</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
+  <div class="version-text">最新版本 <strong>v2.0</strong> · 更新日期 <strong>2026/5/7</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
 </div>
 
 <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:32px;">
@@ -350,38 +355,40 @@
         <div>
           <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">票種</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" checked onchange="toggleFilter(this,'type','SC')" style="accent-color:#a855f7;width:15px;height:15px;">
-              <span style="color:#a855f7;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">SC</span>
-              <span style="color:var(--muted);font-size:11px;">Sound Check</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" checked onchange="toggleFilter(this,'type','GR')" style="accent-color:#5cfc8a;width:15px;height:15px;">
-              <span style="color:#5cfc8a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GR</span>
-              <span style="color:var(--muted);font-size:11px;">General R</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" checked onchange="toggleFilter(this,'type','GS')" style="accent-color:#5cb8fc;width:15px;height:15px;">
-              <span style="color:#5cb8fc;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GS</span>
-              <span style="color:var(--muted);font-size:11px;">General S</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" onchange="toggleFilter(this,'type','TEST')" style="accent-color:#f5c518;width:15px;height:15px;">
-              <span style="color:#f5c518;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">TEST</span>
-              <span style="color:var(--muted);font-size:11px;">&TEAM 測試</span>
-            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'type','SC')" style="accent-color:#a855f7;width:15px;height:15px;"><span style="color:#a855f7;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">SC</span><span style="color:var(--muted);font-size:11px;">Sound Check</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'type','GR')" style="accent-color:#5cfc8a;width:15px;height:15px;"><span style="color:#5cfc8a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GR</span><span style="color:var(--muted);font-size:11px;">General R</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'type','GS')" style="accent-color:#5cb8fc;width:15px;height:15px;"><span style="color:#5cb8fc;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GS</span><span style="color:var(--muted);font-size:11px;">General S</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="toggleFilter(this,'type','TEST')" style="accent-color:#f5c518;width:15px;height:15px;"><span style="color:#f5c518;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">TEST</span><span style="color:var(--muted);font-size:11px;">&TEAM</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">樓層</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'floor','地面')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">地面</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'floor','2F')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">2F</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'floor','3F')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">3F</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="toggleFilter(this,'floor','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
           </div>
         </div>
         <div style="width:1px;background:var(--border);align-self:stretch;"></div>
         <div>
           <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">方位</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','0')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">地面</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','1')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">E 東</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','2')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N 北</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','3')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">W 西</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','4')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">S 南</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','E 東')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">E 東</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','N 北')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N 北</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','W 西')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">W 西</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'dir','S 南')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">S 南</span></label>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="toggleFilter(this,'dir','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">視野</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'view','正常')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">正常</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'view','受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#f59e0b;font-size:12px;">⚠️ 受阻</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'view','部分受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#fb923c;font-size:12px;">△ 部分受阻</span></label>
           </div>
         </div>
         <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-self:flex-end;">
@@ -397,9 +404,11 @@
         <thead>
           <tr style="background:#0f0f1a;border-bottom:1px solid var(--border);">
             <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">區號</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">方位</th>
             <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">票種</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">樓層</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">方位</th>
             <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">座位數</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">視野</th>
           </tr>
         </thead>
         <tbody id="zoneTableBody"></tbody>
@@ -526,38 +535,40 @@
         <div>
           <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">票種</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" checked onchange="iosToggleFilter(this,'type','SC')" style="accent-color:#a855f7;width:15px;height:15px;">
-              <span style="color:#a855f7;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">SC</span>
-              <span style="color:var(--muted);font-size:11px;">Sound Check</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" checked onchange="iosToggleFilter(this,'type','GR')" style="accent-color:#5cfc8a;width:15px;height:15px;">
-              <span style="color:#5cfc8a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GR</span>
-              <span style="color:var(--muted);font-size:11px;">General R</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" checked onchange="iosToggleFilter(this,'type','GS')" style="accent-color:#5cb8fc;width:15px;height:15px;">
-              <span style="color:#5cb8fc;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GS</span>
-              <span style="color:var(--muted);font-size:11px;">General S</span>
-            </label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-              <input type="checkbox" onchange="iosToggleFilter(this,'type','TEST')" style="accent-color:#f5c518;width:15px;height:15px;">
-              <span style="color:#f5c518;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">TEST</span>
-              <span style="color:var(--muted);font-size:11px;">&TEAM 測試</span>
-            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'type','SC')" style="accent-color:#a855f7;width:15px;height:15px;"><span style="color:#a855f7;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">SC</span><span style="color:var(--muted);font-size:11px;">Sound Check</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'type','GR')" style="accent-color:#5cfc8a;width:15px;height:15px;"><span style="color:#5cfc8a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GR</span><span style="color:var(--muted);font-size:11px;">General R</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'type','GS')" style="accent-color:#5cb8fc;width:15px;height:15px;"><span style="color:#5cb8fc;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GS</span><span style="color:var(--muted);font-size:11px;">General S</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'type','TEST')" style="accent-color:#f5c518;width:15px;height:15px;"><span style="color:#f5c518;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">TEST</span><span style="color:var(--muted);font-size:11px;">&TEAM</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">樓層</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'floor','地面')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">地面</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'floor','2F')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">2F</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'floor','3F')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">3F</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'floor','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
           </div>
         </div>
         <div style="width:1px;background:var(--border);align-self:stretch;"></div>
         <div>
           <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">方位</div>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','0')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">地面</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','1')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">E 東</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','2')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N 北</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','3')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">W 西</span></label>
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','4')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">S 南</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','E 東')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">E 東</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','N 北')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N 北</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','W 西')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">W 西</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','S 南')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">S 南</span></label>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'dir','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">視野</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','正常')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">正常</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#f59e0b;font-size:12px;">⚠️ 受阻</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','部分受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#fb923c;font-size:12px;">△ 部分受阻</span></label>
           </div>
         </div>
         <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-self:flex-end;">
@@ -573,9 +584,11 @@
         <thead>
           <tr style="background:#0f0f1a;border-bottom:1px solid var(--border);">
             <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">區號</th>
-            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">方位</th>
             <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">票種</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">樓層</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">方位</th>
             <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">座位數</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">視野</th>
           </tr>
         </thead>
         <tbody id="iosZoneTableBody"></tbody>
@@ -610,7 +623,11 @@ function switchTab(tab) {
 
 function generateBM() {
   const areas = window._iosAreas || '';
-  if(!areas) return;
+  if(!areas) {
+    document.getElementById('bmOutput').innerText = '（目前無符合篩選條件的區域）';
+    document.getElementById('copyBMBtn').disabled = true;
+    return;
+  }
   const script = document.querySelector('input[name="bmScript"]:checked')?.value || 'seat/ios/script.js';
   const scans = document.getElementById('bm_scans')?.value || 2;
   const interval = document.getElementById('bm_interval')?.value || 300;
@@ -644,23 +661,33 @@ function copyScript(btn) {
 }
 
 // ── iOS 座位篩選器（獨立）──
-const iosActiveFilters = {type:new Set(['SC','GR','GS']), dir:new Set(['0','1','2','3','4'])};
+const iosActiveFilters = {
+  type: new Set(['SC','GR','GS']),
+  floor: new Set(['地面','2F','3F']),
+  dir:  new Set(['E 東','N 北','W 西','S 南']),
+  view: new Set(['正常','受阻','部分受阻']),
+};
 
 function iosBuildTable() {
   const tbody = document.getElementById('iosZoneTableBody');
   tbody.innerHTML = '';
-  ZONES.forEach(({zone,type,dir}) => {
+  ZONES.forEach(({zone,type,floor,dir}) => {
+    const v = getView(zone);
     const tr = document.createElement('tr');
-    tr.dataset.type = type;
-    tr.dataset.dir = dir;
-    tr.dataset.zone = zone;
-    if(!iosActiveFilters.type.has(type)||!iosActiveFilters.dir.has(dir)) tr.classList.add('hidden');
     tr.innerHTML = `
       <td style="font-family:'Space Mono',monospace;font-weight:700;">${zone}</td>
-      <td style="color:var(--muted);font-size:12px;">${DIR_MAP[dir]||dir}</td>
       <td><span style="color:${TYPE_COLOR[type]};font-family:'Space Mono',monospace;font-size:11px;font-weight:700;">${type}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${floor}</td>
+      <td style="color:var(--muted);font-size:12px;">${dir}</td>
       <td style="color:var(--muted);font-size:12px;">-</td>
+      ${viewCell(zone)}
     `;
+    tr.dataset.type = type;
+    tr.dataset.floor = floor;
+    tr.dataset.dir = dir;
+    tr.dataset.zone = zone;
+    tr.dataset.view = v;
+    if(!iosActiveFilters.type.has(type)||!iosActiveFilters.floor.has(floor)||!iosActiveFilters.dir.has(dir)||!iosActiveFilters.view.has(v)) tr.classList.add('hidden');
     tbody.appendChild(tr);
   });
   iosUpdateOutput();
@@ -670,9 +697,10 @@ function iosToggleFilter(cb, filterType, val) {
   if(cb.checked){
     iosActiveFilters[filterType].add(val);
     if(filterType==='type'&&val==='TEST'){
+      iosActiveFilters.floor.add('N/A');
       iosActiveFilters.dir.add('N/A');
       document.querySelectorAll('#tab-ios .filter-panel input[type=checkbox]').forEach(c=>{
-        if(c.closest('label')?.innerText.includes('N/A')) c.checked=true;
+        if(c.closest('label')?.innerText.trim()==='N/A') c.checked=true;
       });
     }
   } else {
@@ -684,24 +712,31 @@ function iosToggleFilter(cb, filterType, val) {
 function iosFilterAll() {
   document.querySelectorAll('#tab-ios .filter-panel input[type=checkbox]').forEach(cb=>{
     const label=cb.closest('label')?.innerText||'';
-    if(label.includes('TEST')||label.includes('N/A')) cb.checked=false;
+    if(label.includes('TEST')||label.trim()==='N/A') cb.checked=false;
     else cb.checked=true;
   });
-  iosActiveFilters.type=new Set(['SC','GR','GS']);
-  iosActiveFilters.dir=new Set(['0','1','2','3','4']);
+  iosActiveFilters.type  = new Set(['SC','GR','GS']);
+  iosActiveFilters.floor = new Set(['地面','2F','3F']);
+  iosActiveFilters.dir   = new Set(['E 東','N 北','W 西','S 南']);
+  iosActiveFilters.view  = new Set(['正常','受阻','部分受阻']);
   iosApplyFilters();
 }
 
 function iosFilterNone() {
   document.querySelectorAll('#tab-ios .filter-panel input[type=checkbox]').forEach(cb=>cb.checked=false);
-  iosActiveFilters.type=new Set();
-  iosActiveFilters.dir=new Set();
+  iosActiveFilters.type  = new Set();
+  iosActiveFilters.floor = new Set();
+  iosActiveFilters.dir   = new Set();
+  iosActiveFilters.view  = new Set();
   iosApplyFilters();
 }
 
 function iosApplyFilters() {
   document.querySelectorAll('#iosZoneTableBody tr').forEach(row=>{
-    const show=iosActiveFilters.type.has(row.dataset.type)&&iosActiveFilters.dir.has(row.dataset.dir);
+    const show = iosActiveFilters.type.has(row.dataset.type)
+      && iosActiveFilters.floor.has(row.dataset.floor)
+      && iosActiveFilters.dir.has(row.dataset.dir)
+      && iosActiveFilters.view.has(row.dataset.view);
     row.classList.toggle('hidden',!show);
   });
   iosUpdateOutput();
@@ -716,55 +751,100 @@ function iosUpdateOutput() {
   window._iosAreas = zones.length ? `[${zones.join(',')}]` : null;
   generateBM();
 }
+
+const OBSTRUCTED = new Set([
+  '022','026','027','030','002','003','006','007','008','013',
+  '062','066','067','070','043','044','047','048','049','052',
+  '223','224','225','116','121','122',
+  '407','413','414','415','304','305','332','333','334',
+  '259','260','261','262','267','268','152','158','340','341','369','370',
+]);
+const PARTIAL = new Set([
+  '003','013','044',
+  '225','116','121','407','413','304','332','334',
+  '262','267','152','340','370',
+]);
+
+function getView(zone) {
+  if(PARTIAL.has(zone)) return '部分受阻';
+  if(OBSTRUCTED.has(zone)) return '受阻';
+  return '正常';
+}
+function viewCell(zone) {
+  const v = getView(zone);
+  if(v==='受阻')    return `<td style="font-size:11px;color:#f59e0b;">⚠️ 受阻</td>`;
+  if(v==='部分受阻') return `<td style="font-size:11px;color:#fb923c;">△ 部分</td>`;
+  return `<td style="font-size:11px;color:var(--muted);">-</td>`;
+}
+
 const ZONES = [
-  // Sound Check (地面)
-  ...['002','003','004','005','008','009','010','011','022','023','024','027','028','029','042','043','044','045','048','049','050','051','062','063','064','067','068','069'].map(z=>({zone:z,type:'SC',dir:'0'})),
-  // General R
-  ...['007','012','026','030','047','052','066','070'].map(z=>({zone:z,type:'GR',dir:'0'})),
-  ...['116','117','118','119','120','121','122'].map(z=>({zone:z,type:'GR',dir:'1'})),
-  ...['223','224','225','226','227','228','229','230','231'].map(z=>({zone:z,type:'GR',dir:'2'})),
-  ...['304','305','306','332','333','334'].map(z=>({zone:z,type:'GR',dir:'3'})),
-  ...['407','408','409','410','411','412','413','414','415'].map(z=>({zone:z,type:'GR',dir:'4'})),
-  // General S
-  ...['152','153','154','155','156','157','158'].map(z=>({zone:z,type:'GS',dir:'1'})),
-  ...['259','260','261','262','263','264','265','266','267','268'].map(z=>({zone:z,type:'GS',dir:'2'})),
-  ...['337','338','339','340','341','369','370','371','372'].map(z=>({zone:z,type:'GS',dir:'3'})),
-  ...['442','443','444','445','446','447','448','449','450','451'].map(z=>({zone:z,type:'GS',dir:'4'})),
-  // TEST (&TEAM)
-  ...['005','308','309','310','311','312','313','314'].map(z=>({zone:z,type:'TEST',dir:'N/A'})),
+  // SC 地面 E東
+  ...['002','003','004','005','008','009','010','011'].map(z=>({zone:z,type:'SC',floor:'地面',dir:'E 東'})),
+  // SC 地面 N北
+  ...['022','023','024','027','028','029'].map(z=>({zone:z,type:'SC',floor:'地面',dir:'N 北'})),
+  // SC 地面 W西
+  ...['042','043','044','045','048','049','050','051'].map(z=>({zone:z,type:'SC',floor:'地面',dir:'W 西'})),
+  // SC 地面 S南
+  ...['062','063','064','067','068','069'].map(z=>({zone:z,type:'SC',floor:'地面',dir:'S 南'})),
+  // GR 地面
+  ...['007','012'].map(z=>({zone:z,type:'GR',floor:'地面',dir:'E 東'})),
+  ...['026','030'].map(z=>({zone:z,type:'GR',floor:'地面',dir:'N 北'})),
+  ...['047','052'].map(z=>({zone:z,type:'GR',floor:'地面',dir:'W 西'})),
+  ...['066','070'].map(z=>({zone:z,type:'GR',floor:'地面',dir:'S 南'})),
+  // GR 2F
+  ...['116','117','118','119','120','121','122'].map(z=>({zone:z,type:'GR',floor:'2F',dir:'E 東'})),
+  ...['223','224','225','226','227','228','229','230','231'].map(z=>({zone:z,type:'GR',floor:'2F',dir:'N 北'})),
+  ...['304','305','306','332','333','334'].map(z=>({zone:z,type:'GR',floor:'2F',dir:'W 西'})),
+  ...['407','408','409','410','411','412','413','414','415'].map(z=>({zone:z,type:'GR',floor:'2F',dir:'S 南'})),
+  // GS 3F
+  ...['152','153','154','155','156','157','158'].map(z=>({zone:z,type:'GS',floor:'3F',dir:'E 東'})),
+  ...['259','260','261','262','263','264','265','266','267','268'].map(z=>({zone:z,type:'GS',floor:'3F',dir:'N 北'})),
+  ...['337','338','339','340','341','369','370','371','372'].map(z=>({zone:z,type:'GS',floor:'3F',dir:'W 西'})),
+  ...['442','443','444','445','446','447','448','449','450','451'].map(z=>({zone:z,type:'GS',floor:'3F',dir:'S 南'})),
+  // TEST
+  ...['308','309','310','311','312','313','314'].map(z=>({zone:z,type:'TEST',floor:'N/A',dir:'N/A'})),
 ];
 
-const DIR_MAP = {'0':'地面','1':'E 東','2':'N 北','3':'W 西','4':'S 南','N/A':'N/A'};
 const TYPE_COLOR = {'SC':'#a855f7','GR':'#5cfc8a','GS':'#5cb8fc','TEST':'#f5c518'};
-const activeFilters = {type:new Set(['SC','GR','GS']), dir:new Set(['0','1','2','3','4'])};
+const activeFilters = {
+  type:  new Set(['SC','GR','GS']),
+  floor: new Set(['地面','2F','3F']),
+  dir:   new Set(['E 東','N 北','W 西','S 南']),
+  view:  new Set(['正常','受阻','部分受阻']),
+};
 
 function buildTable() {
   const tbody = document.getElementById('zoneTableBody');
   tbody.innerHTML = '';
-  ZONES.forEach(({zone,type,dir}) => {
+  ZONES.forEach(({zone,type,floor,dir}) => {
+    const v = getView(zone);
     const tr = document.createElement('tr');
-    tr.dataset.type = type;
-    tr.dataset.dir = dir;
-    tr.dataset.zone = zone;
     tr.innerHTML = `
       <td style="font-family:'Space Mono',monospace;font-weight:700;">${zone}</td>
-      <td style="color:var(--muted);font-size:12px;">${DIR_MAP[dir]||dir}</td>
       <td><span style="color:${TYPE_COLOR[type]};font-family:'Space Mono',monospace;font-size:11px;font-weight:700;">${type}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${floor}</td>
+      <td style="color:var(--muted);font-size:12px;">${dir}</td>
       <td style="color:var(--muted);font-size:12px;">-</td>
+      ${viewCell(zone)}
     `;
+    tr.dataset.type = type;
+    tr.dataset.floor = floor;
+    tr.dataset.dir = dir;
+    tr.dataset.zone = zone;
+    tr.dataset.view = v;
     tbody.appendChild(tr);
   });
-  applyFilters(); // 用 applyFilters 而不是 updateOutput，確保 TEST 一開始就被過濾掉
+  applyFilters();
 }
 
 function toggleFilter(cb, filterType, val) {
-  if(cb.checked) {
+  if(cb.checked){
     activeFilters[filterType].add(val);
-    // 勾選 TEST 時自動勾選 N/A 方位
-    if(filterType==='type' && val==='TEST'){
+    if(filterType==='type'&&val==='TEST'){
+      activeFilters.floor.add('N/A');
       activeFilters.dir.add('N/A');
-      document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(c => {
-        if(c.closest('label')?.innerText.includes('N/A')) c.checked = true;
+      document.querySelectorAll('#tab-desktop .filter-panel input[type=checkbox]').forEach(c=>{
+        if(c.closest('label')?.innerText.trim()==='N/A') c.checked=true;
       });
     }
   } else {
@@ -774,28 +854,34 @@ function toggleFilter(cb, filterType, val) {
 }
 
 function filterAll() {
-  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb => {
-    const label = cb.closest('label')?.innerText||'';
-    if(label.includes('TEST')||label.includes('N/A')) cb.checked = false;
-    else cb.checked = true;
+  document.querySelectorAll('#tab-desktop .filter-panel input[type=checkbox]').forEach(cb=>{
+    const label=cb.closest('label')?.innerText||'';
+    if(label.includes('TEST')||label.trim()==='N/A') cb.checked=false;
+    else cb.checked=true;
   });
-  activeFilters.type = new Set(['SC','GR','GS']);
-  activeFilters.dir = new Set(['0','1','2','3','4']);
+  activeFilters.type  = new Set(['SC','GR','GS']);
+  activeFilters.floor = new Set(['地面','2F','3F']);
+  activeFilters.dir   = new Set(['E 東','N 北','W 西','S 南']);
+  activeFilters.view  = new Set(['正常','受阻','部分受阻']);
   applyFilters();
 }
 
 function filterNone() {
-  document.querySelectorAll('#zoneTableBody tr').forEach(row => row.classList.add('hidden'));
-  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb => cb.checked = false);
-  activeFilters.type = new Set();
-  activeFilters.dir = new Set();
+  document.querySelectorAll('#tab-desktop .filter-panel input[type=checkbox]').forEach(cb=>cb.checked=false);
+  activeFilters.type  = new Set();
+  activeFilters.floor = new Set();
+  activeFilters.dir   = new Set();
+  activeFilters.view  = new Set();
   updateOutput();
 }
 
 function applyFilters() {
-  document.querySelectorAll('#zoneTableBody tr').forEach(row => {
-    const show = activeFilters.type.has(row.dataset.type) && activeFilters.dir.has(row.dataset.dir);
-    row.classList.toggle('hidden', !show);
+  document.querySelectorAll('#zoneTableBody tr').forEach(row=>{
+    const show = activeFilters.type.has(row.dataset.type)
+      && activeFilters.floor.has(row.dataset.floor)
+      && activeFilters.dir.has(row.dataset.dir)
+      && activeFilters.view.has(row.dataset.view);
+    row.classList.toggle('hidden',!show);
   });
   updateOutput();
 }
