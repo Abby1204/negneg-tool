@@ -219,7 +219,7 @@
 
   <div class="version-bar">
   <div class="version-dot"></div>
-  <div class="version-text">最新版本 <strong>v2.0</strong> · 更新日期 <strong>2026/5/7</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
+  <div class="version-text">最新版本 <strong>v2.1</strong> · 更新日期 <strong>2026/5/7</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
 </div>
 
 <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:32px;">
@@ -773,7 +773,7 @@ function getView(zone) {
 function viewCell(zone) {
   const v = getView(zone);
   if(v==='受阻')    return `<td style="font-size:11px;color:#f59e0b;">⚠️ 受阻</td>`;
-  if(v==='部分受阻') return `<td style="font-size:11px;color:#fb923c;">△ 部分</td>`;
+  if(v==='部分受阻') return `<td style="font-size:11px;color:#fb923c;">△ 部分受阻</td>`;
   return `<td style="font-size:11px;color:var(--muted);">-</td>`;
 }
 
