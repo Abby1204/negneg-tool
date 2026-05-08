@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEG NEG 👁️ 排隊監控</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --border: #2a2a3a;
+    --accent: #7c5cfc;
+    --accent2: #fc5c7d;
+    --gold: #f5c518;
+    --text: #e8e8f0;
+    --muted: #888899;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(252,92,125,0.06) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 860px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* Nav */
+  .nav {
+    display: flex; gap: 8px; justify-content: center;
+    padding: 16px 0 0;
+  }
+  .nav-btn {
+    padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+    cursor: pointer; text-decoration: none; color: var(--muted);
+    background: var(--card); transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border-color: transparent;
+  }
+
+  header { padding: 24px 0 32px; text-align: center; }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 16px;
+    font-family: 'Space Mono', monospace;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 42px); font-weight: 900; line-height: 1.2;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--accent2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px;
+  }
+  .subtitle { color: var(--muted); font-size: 14px; font-family: 'Space Mono', monospace; }
+
+  .version-bar {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+  }
+  .version-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #5cfc8a;
+    box-shadow: 0 0 8px #5cfc8a; animation: pulse 2s infinite; flex-shrink: 0;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .version-text { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--muted); }
+  .version-text strong { color: var(--text); }
+
+  .section { margin-bottom: 32px; }
+  .section-title {
+    font-size: 13px; font-weight: 700; letter-spacing: 3px; color: var(--muted);
+    text-transform: uppercase; margin-bottom: 16px; font-family: 'Space Mono', monospace;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+
+  .steps { display: flex; flex-direction: column; }
+  .step {
+    display: flex; gap: 16px; padding: 20px 24px;
+    background: var(--card); border: 1px solid var(--border); border-bottom: none; transition: background 0.2s;
+  }
+  .step:first-child { border-radius: 16px 16px 0 0; }
+  .step:last-child { border-radius: 0 0 16px 16px; border-bottom: 1px solid var(--border); }
+  .step:hover { background: #1a1a28; }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .step-desc code {
+    background: rgba(124,92,252,0.2); color: var(--accent);
+    padding: 1px 6px; border-radius: 4px; font-family: 'Space Mono', monospace; font-size: 12px;
+  }
+  .step-warn {
+    margin-top: 8px; background: rgba(252,92,125,0.1); border: 1px solid rgba(252,92,125,0.3);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--accent2);
+  }
+  .step-tip {
+    margin-top: 8px; background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.3);
+    border-radius: 8px; padding: 8px 12px; font-size: 12px; color: var(--gold);
+  }
+
+  .script-box { background: #080810; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+  .script-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px; background: #0f0f1a; border-bottom: 1px solid var(--border);
+  }
+  .script-dots { display: flex; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+  .script-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+  .copy-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border: none; padding: 6px 16px; border-radius: 8px;
+    font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Space Mono', monospace; transition: opacity 0.2s;
+  }
+  .copy-btn:hover { opacity: 0.85; }
+  .copy-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .copy-btn.copied { background: #5cfc8a; color: #000; }
+  .script-code {
+    padding: 20px; font-family: 'Space Mono', monospace; font-size: 11px; color: #a0a0c0;
+    overflow-x: auto; white-space: pre; max-height: 300px; overflow-y: auto; line-height: 1.6;
+  }
+  .script-loading { padding: 40px; text-align: center; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 12px; }
+
+  /* Tab styles */
+  .tab-bar {
+    display: flex; gap: 4px; margin-bottom: 24px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 4px;
+  }
+  .tab-btn {
+    flex: 1; padding: 10px 16px; border: none; border-radius: 8px;
+    font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; color: var(--muted); background: transparent;
+  }
+  .tab-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Bookmarklet generator */
+  .bm-param {
+    display: grid; grid-template-columns: 180px 1fr;
+    align-items: center; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bm-param:last-of-type { border-bottom: none; }
+  .bm-param label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); }
+  .bm-param input {
+    background: #080810; border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; color: var(--text); font-family: 'Space Mono', monospace;
+    font-size: 12px; width: 100px;
+  }
+  .bm-param input:focus { outline: none; border-color: var(--accent); }
+  .bm-param .param-desc { font-size: 11px; color: var(--muted); margin-left: 8px; }
+
+  .note-list { display: flex; flex-direction: column; gap: 10px; }
+  .note-item { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .note-icon { flex-shrink: 0; font-size: 16px; }
+
+  footer { text-align: center; padding: 40px 0; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Nav -->
+  <div class="nav">
+    <a href="index.html" class="nav-btn">🎟 搶票</a>
+    <a href="queue.html" class="nav-btn active">👁 排隊監控</a>
+    <a href="vip.html" class="nav-btn">💎 貴婦</a>
+  </div>
+
+  <header>
+    <div class="badge">👁 QUEUE MONITOR v1.0</div>
+    <h1>NEG NEG</h1>
+    <p class="subtitle">2026 ARIRANG CONCERT TOUR</p>
+  </header>
+
+  <div class="version-bar">
+    <div class="version-dot"></div>
+    <div class="version-text">最新版本 <strong>v1.0</strong> · 更新日期 <strong>2026/5/9</strong> · 適用場次 <strong>6/12, 6/13 2026</strong></div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('desktop',this)">🖥 Desktop</button>
+    <button class="tab-btn" onclick="switchTab('ios',this)">📱 iOS / iPad</button>
+  </div>
+
+  <!-- ── Desktop Tab ── -->
+  <div class="tab-content active" id="tab-desktop">
+
+  <div class="section">
+    <div class="section-title">📋 使用 SOP · Desktop</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">登入 NOL World 並進入排隊頁面</div>
+          <div class="step-desc">確認已登入帳號，進入演唱會購票頁面，等待系統分配排隊號碼。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">開啟 Chrome 開發者工具</div>
+          <div class="step-desc">按 <code>F12</code> 開啟 DevTools，點選上方 <code>Console</code> 分頁。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">複製腳本並貼到 Console 執行</div>
+          <div class="step-desc">點下方「複製腳本」按鈕，貼到 Console 輸入欄，按 <code>Enter</code> 執行。跳出啟動確認後按確定，左下角出現浮動資訊即代表啟動成功。</div>
+          <div class="step-tip">💡 腳本每 10 秒掃描一次目前號碼，累積 5 筆後開始估算進場時間。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">等待警報，收到通知立刻去搶票</div>
+          <div class="step-desc">號碼降到門檻值以下時電腦會響鈴並彈出通知，立刻切換到搶票腳本。</div>
+          <div class="step-warn">⚠️ 收到警報後請立刻啟動搶票腳本！座位會很快被搶完。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">💻 排隊監控腳本 · Desktop</div>
+    <div class="script-box">
+      <div class="script-header">
+        <div class="script-dots">
+          <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+        </div>
+        <div class="script-label" id="scriptLabel">載入中...</div>
+        <button class="copy-btn" onclick="copyScript(this)" id="copyScriptBtn" disabled>複製腳本</button>
+      </div>
+      <div class="script-code" id="scriptCode"><div class="script-loading">⏳ 載入腳本中...</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">⚙️ 參數說明</div>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start;">
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);background:#080810;border:1px solid var(--border);border-radius:6px;padding:6px 10px;">scanInterval = 10000</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;">掃描間隔（毫秒）。10000 = 每 10 秒掃一次，數字越小越頻繁。</div>
+        </div>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:start;">
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--accent);background:#080810;border:1px solid var(--border);border-radius:6px;padding:6px 10px;">threshold = 300</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;">觸發警報的門檻號碼。號碼降到此值以下即響鈴通知，建議設 300～500。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">⚠️ 注意事項</div>
+    <div class="card">
+      <div class="note-list">
+        <div class="note-item"><span class="note-icon">🔇</span><span>執行腳本前確認瀏覽器音效未靜音，觸發時會響鈴提醒</span></div>
+        <div class="note-item"><span class="note-icon">📍</span><span>左下角浮動視窗顯示入場號碼、平均速度、預計進場時間</span></div>
+        <div class="note-item"><span class="note-icon">⏱️</span><span>累積 5 筆資料後才開始估算時間，前 5 次顯示「計算中」</span></div>
+        <div class="note-item"><span class="note-icon">📵</span><span>監控期間勿重新整理頁面，否則腳本會停止運作</span></div>
+        <div class="note-item"><span class="note-icon">🚨</span><span>收到警報後立刻切換到搶票腳本，時間非常緊迫</span></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end tab-desktop -->
+
+  <!-- ── iOS Tab ── -->
+  <div class="tab-content" id="tab-ios">
+
+  <div class="section">
+    <div class="section-title">📋 使用 SOP · iOS / iPad</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">第一次使用：儲存 Bookmarklet</div>
+          <div class="step-desc">先隨便把任何網頁加入書籤，然後<strong>編輯</strong>該書籤，把名稱改成「排隊監控」，網址換成下方產生的 Bookmarklet 內容。</div>
+          <div class="step-tip">💡 之後每次只要點這個書籤就能啟動，不需要重複存</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">登入 NOL World 並進入排隊頁面</div>
+          <div class="step-desc">使用 Safari 登入帳號，進入演唱會購票頁面，等待系統分配排隊號碼。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">點「排隊監控」書籤啟動</div>
+          <div class="step-desc">點擊書籤圖示找到「排隊監控」並點擊。跳出確認視窗後按確定（同時解鎖音效），左下角出現浮動資訊即代表啟動成功。</div>
+          <div class="step-tip">💡 點確定的動作會解鎖 iOS 音效，觸發時才能響鈴</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">等待警報，收到通知立刻去搶票</div>
+          <div class="step-desc">號碼降到門檻值以下時會響鈴並彈出通知，立刻切換到搶票書籤。</div>
+          <div class="step-warn">⚠️ 收到警報後請立刻啟動搶票 Bookmarklet！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔖 Bookmarklet 產生器</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+        填好參數後，複製下方結果存進書籤網址欄。
+      </div>
+      <div>
+        <div class="bm-param">
+          <label>scan_interval</label>
+          <div style="display:flex;align-items:center;">
+            <input type="number" id="bm_interval" value="10000" min="3000" max="60000" oninput="generateBM()">
+            <span class="param-desc">掃描間隔 ms（建議 10000）</span>
+          </div>
+        </div>
+        <div class="bm-param">
+          <label>threshold</label>
+          <div style="display:flex;align-items:center;">
+            <input type="number" id="bm_threshold" value="300" min="0" max="9999" oninput="generateBM()">
+            <span class="param-desc">觸發警報門檻號碼</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">產生結果 · 複製後存入書籤網址欄</span>
+        <button class="copy-btn" onclick="copyBM(this)" id="copyBMBtn">複製</button>
+      </div>
+      <div id="bmOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">⚠️ 注意事項</div>
+    <div class="card">
+      <div class="note-list">
+        <div class="note-item"><span class="note-icon">🔇</span><span>啟動時跳出的確認視窗一定要按確定，這樣才能解鎖 iOS 音效</span></div>
+        <div class="note-item"><span class="note-icon">📍</span><span>左下角浮動視窗顯示入場號碼、平均速度、預計進場時間</span></div>
+        <div class="note-item"><span class="note-icon">⏱️</span><span>累積 5 筆資料後才開始估算時間，前 5 次顯示「計算中」</span></div>
+        <div class="note-item"><span class="note-icon">📱</span><span>Safari 需保持在前景，鎖屏或切換 App 會暫停掃描</span></div>
+        <div class="note-item"><span class="note-icon">🚨</span><span>收到警報後立刻切換到搶票 Bookmarklet，時間非常緊迫</span></div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end tab-ios -->
+
+</div><!-- end container -->
+
+<footer>NEG NEG 工具 · 僅供個人使用 · 祝順利 💜</footer>
+
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+// 載入 Desktop 腳本
+fetch('queue/desktop/script.js?t=' + Date.now())
+  .then(r => r.text())
+  .then(code => {
+    document.getElementById('scriptCode').innerText = code;
+    document.getElementById('scriptLabel').innerText = 'queue/desktop/script.js · 最新版本';
+    document.getElementById('copyScriptBtn').disabled = false;
+  })
+  .catch(() => {
+    document.getElementById('scriptCode').innerText = '⚠️ 無法載入腳本，請確認 queue/desktop/script.js 已上傳至 repo';
+    document.getElementById('scriptLabel').innerText = '載入失敗';
+  });
+
+function copyScript(btn) {
+  const code = document.getElementById('scriptCode').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.innerText = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerText = '複製腳本'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function generateBM() {
+  const interval = document.getElementById('bm_interval')?.value || 10000;
+  const threshold = document.getElementById('bm_threshold')?.value || 300;
+  const bm = `javascript:(function(){const CONFIG={scanInterval:${interval},threshold:${threshold}};let scanning=true;const history=[];let startOrder=null;const startTime=Date.now();let smoothedRate=null;const AC=window.AudioContext||window.webkitAudioContext;const audioCtx=AC?new AC():null;const display=document.createElement('div');display.style.cssText='position:fixed;bottom:20px;left:20px;z-index:99999;padding:10px 14px;background:rgba(0,0,0,0.85);color:white;border-radius:8px;font-size:13px;font-family:monospace;line-height:1.8;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);border:1px solid #444;';display.innerText='⏳ 計算中...';document.body.appendChild(display);const btn=document.createElement('button');btn.innerText='⏹ 停止監控';btn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;padding:10px 16px;background:#e74c3c;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)';btn.onclick=()=>{scanning=false;clearInterval(timer);btn.innerText='✅ 已停止';btn.style.background='#888';};document.body.appendChild(btn);const playLoudAlert=()=>{try{if(!audioCtx)return;if(audioCtx.state==='suspended')audioCtx.resume();const osc=audioCtx.createOscillator();const gain=audioCtx.createGain();osc.type='square';osc.frequency.setValueAtTime(1200,audioCtx.currentTime);gain.gain.setValueAtTime(0.5,audioCtx.currentTime);osc.connect(gain);gain.connect(audioCtx.destination);osc.start();setTimeout(()=>osc.stop(),1000)}catch(e){}};const fmt=(d)=>{const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');const h=String(d.getHours()).padStart(2,'0');const min=String(d.getMinutes()).padStart(2,'0');return m+'/'+day+' '+h+':'+min};const linearRegression=(data)=>{const n=data.length;if(n<2)return null;const t0=data[0].time;const xs=data.map(d=>(d.time-t0)/1000);const ys=data.map(d=>d.order);const sumX=xs.reduce((a,b)=>a+b,0);const sumY=ys.reduce((a,b)=>a+b,0);const sumXY=xs.reduce((a,b,i)=>a+b*ys[i],0);const sumX2=xs.reduce((a,b)=>a+b*b,0);const slope=(n*sumXY-sumX*sumY)/(n*sumX2-sumX*sumX);return Math.abs(slope)};const updateDisplay=(foundOrder)=>{if(foundOrder===null){display.innerText='⏳ 找不到號碼';return}const startInfo=startOrder!==null?'🎫 入場號碼：'+startOrder+'\\n🕐 入場時間：'+fmt(new Date(startTime)):'🎫 入場號碼：計算中';let rateText='⚡ 平均每分鐘：計算中';let etaText='🎯 預計進場：計算中';if(history.length>=5){const rate=linearRegression(history);if(rate>0){smoothedRate=smoothedRate===null?rate:smoothedRate*0.7+rate*0.3;const perMin=Math.round(smoothedRate*60);rateText='⚡ 平均每分鐘：'+perMin+' 號';const etaSecs=foundOrder/smoothedRate;const etaTime=new Date(Date.now()+etaSecs*1000);etaText='🎯 預計進場：'+fmt(etaTime)}else{rateText='⚡ 平均每分鐘：隊伍暫停';etaText='🎯 預計進場：暫停中'}}display.innerText=startInfo+'\\n'+rateText+'\\n'+etaText};const scan=()=>{if(!scanning)return;const strongs=Array.from(document.querySelectorAll('strong'));let foundOrder=null;for(let el of strongs){let text=el.innerText.trim().replace(/,/g,'');if(/^\\d+$/.test(text)){foundOrder=parseInt(text);break}}if(foundOrder!==null){if(startOrder===null)startOrder=foundOrder;history.push({time:Date.now(),order:foundOrder});if(history.length>30)history.shift()}updateDisplay(foundOrder);if(foundOrder!==null&&foundOrder<=CONFIG.threshold){scanning=false;clearInterval(timer);btn.innerText='🚨 已觸發';btn.style.background='#e67e22';playLoudAlert();setTimeout(()=>{alert('🚨 RING ALARM！號碼：'+foundOrder)},100)}};const timer=setInterval(scan,CONFIG.scanInterval);alert('✅ 監控啟動！\\n門檻：'+CONFIG.threshold+'\\n請點確定解鎖音訊警報');if(audioCtx)audioCtx.resume();scan()})();`;
+  document.getElementById('bmOutput').innerText = bm;
+}
+
+function copyBM(btn) {
+  const text = document.getElementById('bmOutput').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerText = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerText = '複製'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// 頁面載入時產生預設 BM
+generateBM();
+</script>
+</body>
+</html>
