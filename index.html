@@ -206,10 +206,34 @@
   #iosZoneTableBody td { padding: 9px 16px; font-size: 12px; }
 
   footer { text-align: center; padding: 40px 0; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; }
+
+  /* Nav */
+  .nav {
+    display: flex; gap: 8px; justify-content: center;
+    padding: 16px 0 0;
+  }
+  .nav-btn {
+    padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+    cursor: pointer; text-decoration: none; color: var(--muted);
+    background: var(--card); transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; border-color: transparent;
+  }
 </style>
 </head>
 <body>
 <div class="container">
+
+  <!-- Nav -->
+  <div class="nav">
+    <a href="index.html" class="nav-btn active">🎟 搶票</a>
+    <a href="queue.html" class="nav-btn">👁 排隊監控</a>
+    <a href="vip.html" class="nav-btn">💎 貴婦</a>
+  </div>
 
   <header>
     <div class="badge">🎟 TICKET TOOL v2.1</div>
