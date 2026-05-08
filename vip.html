@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEG NEG 💎 貴婦</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f; --card: #12121a; --border: #2a2a3a;
+    --accent: #7c5cfc; --accent2: #fc5c7d; --gold: #f5c518;
+    --text: #e8e8f0; --muted: #888899;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh; overflow-x: hidden;
+    display: flex; flex-direction: column;
+  }
+  body::before {
+    content: ''; position: fixed; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at 20% 20%, rgba(124,92,252,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(252,92,125,0.06) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 860px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; }
+
+  .nav { display: flex; gap: 8px; justify-content: center; padding: 16px 0 0; }
+  .nav-btn {
+    padding: 8px 18px; border-radius: 20px; border: 1px solid var(--border);
+    font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700;
+    cursor: pointer; text-decoration: none; color: var(--muted);
+    background: var(--card); transition: all 0.2s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border-color: transparent; }
+
+  .center {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 60px 0;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    padding: 4px 12px; border-radius: 20px; margin-bottom: 32px;
+    font-family: 'Space Mono', monospace;
+  }
+  .icon { font-size: 64px; margin-bottom: 24px; }
+  h1 {
+    font-size: clamp(28px, 5vw, 42px); font-weight: 900;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--accent2) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .sub {
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    color: var(--muted); margin-bottom: 8px; letter-spacing: 1px;
+  }
+  .sub2 { font-size: 13px; color: var(--muted); line-height: 1.8; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .cursor { display: inline-block; animation: blink 1.2s infinite; color: var(--accent); font-family: 'Space Mono', monospace; }
+
+  footer { text-align: center; padding: 24px 0; color: var(--muted); font-size: 12px; font-family: 'Space Mono', monospace; position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="nav">
+    <a href="index.html" class="nav-btn">🎟 搶票</a>
+    <a href="queue.html" class="nav-btn">👁 排隊監控</a>
+    <a href="vip.html" class="nav-btn active">💎 貴婦</a>
+  </div>
+
+  <div class="center">
+    <div class="badge">💎 VIP TOOL · COMING SOON</div>
+    <div class="icon">🚧</div>
+    <h1>Under Construction</h1>
+    <p class="sub">建構中<span class="cursor">_</span></p>
+  </div>
+
+</div>
+<footer>NEG NEG 工具 · 僅供個人使用 · 祝順利 💜</footer>
+</body>
+</html>
