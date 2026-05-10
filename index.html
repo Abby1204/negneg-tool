@@ -243,7 +243,7 @@
 
   <div class="version-bar">
   <div class="version-dot"></div>
-  <div class="version-text">最新版本 <strong>v2.1</strong> · 更新日期 <strong>2026/5/7</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
+  <div class="version-text">最新版本 <strong>v2.2</strong> · 更新日期 <strong>2026/5/11</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
 </div>
 
 <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:32px;">
@@ -260,10 +260,10 @@
     <span style="color:var(--muted);">遇到AD時會等待N秒 (由參數指定秒數)</span>
   </div>
 
-  <div style="background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-    <span style="color:var(--gold);font-size:16px;">⚠️</span>
-    <span style="color:var(--gold);font-weight:700;">尚未驗證</span>
-    <span style="color:var(--muted);">白屏超時換區（邏輯已寫入，待確認）</span>
+  <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
+    <span style="color:#5cfc8a;font-size:16px;">✅</span>
+    <span style="color:#5cfc8a;font-weight:700;">已驗證</span>
+    <span style="color:var(--muted);">白屏超時換區</span>
   </div>
 
 
@@ -415,6 +415,17 @@
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'view','部分受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#fb923c;font-size:12px;">△ 部分受阻</span></label>
           </div>
         </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">座位數</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'seats','<500')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">&lt; 500</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'seats','500~1000')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">500 ~ 1000</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'seats','1000~1500')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">1000 ~ 1500</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="toggleFilter(this,'seats','1500+')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">1500 +</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="toggleFilter(this,'seats','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
+          </div>
+        </div>
         <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-self:flex-end;">
           <button onclick="filterAll()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;white-space:nowrap;">全選篩選</button>
           <button onclick="filterNone()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;white-space:nowrap;">全消篩選</button>
@@ -523,11 +534,11 @@
         </div>
       </div>
       <div>
-        <div class="bm-param"><label>scans_per_area</label><div style="display:flex;align-items:center;"><input type="number" id="bm_scans" value="2" min="1" max="10" oninput="generateBM()"><span class="param-desc">同區掃幾次</span></div></div>
-        <div class="bm-param"><label>scan_interval</label><div style="display:flex;align-items:center;"><input type="number" id="bm_interval" value="300" min="100" max="5000" oninput="generateBM()"><span class="param-desc">掃描間隔 ms</span></div></div>
-        <div class="bm-param"><label>no_seat_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="bm_noseat" value="3" min="1" max="20" oninput="generateBM()"><span class="param-desc">沒座位換區次數</span></div></div>
-        <div class="bm-param"><label>whitepage_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="bm_white" value="16" min="1" max="50" oninput="generateBM()"><span class="param-desc">白屏超時次數</span></div></div>
-        <div class="bm-param"><label>access_denied_wait</label><div style="display:flex;align-items:center;"><input type="number" id="bm_ad" value="30" min="5" max="300" oninput="generateBM()"><span class="param-desc">AD 等待秒數</span></div></div>
+        <div class="bm-param"><label>scans_per_area</label><div style="display:flex;align-items:center;"><input type="number" id="bm_scans" value="2" min="1" max="10" oninput="generateBM()"><span class="param-desc">同區掃幾次（1=最快換區）</span></div></div>
+        <div class="bm-param"><label>scan_interval</label><div style="display:flex;align-items:center;"><input type="number" id="bm_interval" value="300" min="100" max="5000" oninput="generateBM()"><span class="param-desc">掃描間隔 ms（300=0.3秒）</span></div></div>
+        <div class="bm-param"><label>no_seat_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="bm_noseat" value="3" min="1" max="20" oninput="generateBM()"><span class="param-desc">沒座位換區次數（3≈0.9秒）</span></div></div>
+        <div class="bm-param"><label>whitepage_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="bm_white" value="16" min="1" max="50" oninput="generateBM()"><span class="param-desc">白屏超時次數（16≈4.8秒）</span></div></div>
+        <div class="bm-param"><label>access_denied_wait</label><div style="display:flex;align-items:center;"><input type="number" id="bm_ad" value="30" min="5" max="300" oninput="generateBM()"><span class="param-desc">AD 等待秒數（30=30秒）</span></div></div>
       </div>
     </div>
     <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
@@ -583,6 +594,17 @@
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','正常')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">正常</span></label>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#f59e0b;font-size:12px;">⚠️ 受阻</span></label>
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','部分受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#fb923c;font-size:12px;">△ 部分受阻</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">座位數</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','<500')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">&lt; 500</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','500~1000')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">500 ~ 1000</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','1000~1500')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">1000 ~ 1500</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','1500+')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">1500 +</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'seats','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
           </div>
         </div>
         <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-self:flex-end;">
@@ -680,6 +702,7 @@ const iosActiveFilters = {
   floor: new Set(['地面','2F','3F']),
   dir:  new Set(['E 東','N 北','W 西','S 南']),
   view: new Set(['正常','受阻','部分受阻']),
+  seats: new Set(['<500','500~1000','1000~1500','1500+','N/A']),
 };
 
 function iosBuildTable() {
@@ -687,13 +710,15 @@ function iosBuildTable() {
   tbody.innerHTML = '';
   ZONES.forEach(({zone,type,floor,dir}) => {
     const v = getView(zone);
+    const sr = getSeatRange(zone);
+    const seatNum = SEATS[zone] ? SEATS[zone].toLocaleString() : '-';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-family:'Space Mono',monospace;font-weight:700;">${zone}</td>
       <td><span style="color:${TYPE_COLOR[type]};font-family:'Space Mono',monospace;font-size:11px;font-weight:700;">${type}</span></td>
       <td style="color:var(--muted);font-size:12px;">${floor}</td>
       <td style="color:var(--muted);font-size:12px;">${dir}</td>
-      <td style="color:var(--muted);font-size:12px;">-</td>
+      <td style="color:var(--muted);font-size:12px;text-align:right;padding-right:20px;">${seatNum}</td>
       ${viewCell(zone)}
     `;
     tr.dataset.type = type;
@@ -701,7 +726,8 @@ function iosBuildTable() {
     tr.dataset.dir = dir;
     tr.dataset.zone = zone;
     tr.dataset.view = v;
-    if(!iosActiveFilters.type.has(type)||!iosActiveFilters.floor.has(floor)||!iosActiveFilters.dir.has(dir)||!iosActiveFilters.view.has(v)) tr.classList.add('hidden');
+    tr.dataset.seats = sr;
+    if(!iosActiveFilters.type.has(type)||!iosActiveFilters.floor.has(floor)||!iosActiveFilters.dir.has(dir)||!iosActiveFilters.view.has(v)||!iosActiveFilters.seats.has(sr)) tr.classList.add('hidden');
     tbody.appendChild(tr);
   });
   iosUpdateOutput();
@@ -733,6 +759,7 @@ function iosFilterAll() {
   iosActiveFilters.floor = new Set(['地面','2F','3F']);
   iosActiveFilters.dir   = new Set(['E 東','N 北','W 西','S 南']);
   iosActiveFilters.view  = new Set(['正常','受阻','部分受阻']);
+  iosActiveFilters.seats = new Set(['<500','500~1000','1000~1500','1500+','N/A']);
   iosApplyFilters();
 }
 
@@ -742,6 +769,7 @@ function iosFilterNone() {
   iosActiveFilters.floor = new Set();
   iosActiveFilters.dir   = new Set();
   iosActiveFilters.view  = new Set();
+  iosActiveFilters.seats = new Set();
   iosApplyFilters();
 }
 
@@ -750,7 +778,8 @@ function iosApplyFilters() {
     const show = iosActiveFilters.type.has(row.dataset.type)
       && iosActiveFilters.floor.has(row.dataset.floor)
       && iosActiveFilters.dir.has(row.dataset.dir)
-      && iosActiveFilters.view.has(row.dataset.view);
+      && iosActiveFilters.view.has(row.dataset.view)
+      && iosActiveFilters.seats.has(row.dataset.seats);
     row.classList.toggle('hidden',!show);
   });
   iosUpdateOutput();
@@ -791,6 +820,30 @@ function viewCell(zone) {
   return `<td style="font-size:11px;color:var(--muted);">-</td>`;
 }
 
+const SEATS = {
+  '002':900,'003':348,'004':347,'005':107,'007':144,'008':154,'009':319,'010':319,'011':265,'012':109,
+  '022':290,'023':252,'024':648,'026':211,'027':352,'028':357,'029':459,'030':357,
+  '042':238,'043':144,'044':348,'045':347,'047':107,'048':154,'049':290,'050':319,'051':319,'052':265,
+  '062':109,'063':252,'064':648,'066':211,'067':352,'068':357,'069':459,'070':357,
+  '116':900,'117':900,'118':900,'119':900,'120':900,'121':876,'122':409,
+  '152':656,'153':1457,'154':1549,'155':1520,'156':1541,'157':1489,'158':1305,
+  '223':1071,'224':827,'225':827,'226':827,'227':818,'228':791,'229':791,'230':791,'231':713,
+  '259':1368,'260':1071,'261':913,'262':759,'263':672,'264':916,'265':717,'266':848,'267':1052,'268':1566,
+  '304':1160,'305':836,'306':574,'332':1044,'333':876,'334':843,
+  '337':672,'338':363,'339':3072,'340':1481,'341':1296,'369':1212,'370':1566,'371':2285,'372':520,
+  '407':809,'408':809,'409':809,'410':809,'411':845,'412':845,'413':845,'414':845,'415':1068,
+  '442':1284,'443':927,'444':866,'445':649,'446':942,'447':707,'448':793,'449':975,'450':1180,'451':1459,
+};
+
+function getSeatRange(zone) {
+  const s = SEATS[zone];
+  if(!s) return 'N/A';
+  if(s < 500) return '<500';
+  if(s < 1000) return '500~1000';
+  if(s < 1500) return '1000~1500';
+  return '1500+';
+}
+
 const ZONES = [
   // SC 地面 E東
   ...['002','003','004','005','008','009','010','011'].map(z=>({zone:z,type:'SC',floor:'地面',dir:'E 東'})),
@@ -825,6 +878,7 @@ const activeFilters = {
   floor: new Set(['地面','2F','3F']),
   dir:   new Set(['E 東','N 北','W 西','S 南']),
   view:  new Set(['正常','受阻','部分受阻']),
+  seats: new Set(['<500','500~1000','1000~1500','1500+','N/A']),
 };
 
 function buildTable() {
@@ -832,13 +886,15 @@ function buildTable() {
   tbody.innerHTML = '';
   ZONES.forEach(({zone,type,floor,dir}) => {
     const v = getView(zone);
+    const sr = getSeatRange(zone);
+    const seatNum = SEATS[zone] ? SEATS[zone].toLocaleString() : '-';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td style="font-family:'Space Mono',monospace;font-weight:700;">${zone}</td>
       <td><span style="color:${TYPE_COLOR[type]};font-family:'Space Mono',monospace;font-size:11px;font-weight:700;">${type}</span></td>
       <td style="color:var(--muted);font-size:12px;">${floor}</td>
       <td style="color:var(--muted);font-size:12px;">${dir}</td>
-      <td style="color:var(--muted);font-size:12px;">-</td>
+      <td style="color:var(--muted);font-size:12px;text-align:right;padding-right:20px;">${seatNum}</td>
       ${viewCell(zone)}
     `;
     tr.dataset.type = type;
@@ -846,6 +902,7 @@ function buildTable() {
     tr.dataset.dir = dir;
     tr.dataset.zone = zone;
     tr.dataset.view = v;
+    tr.dataset.seats = sr;
     tbody.appendChild(tr);
   });
   applyFilters();
@@ -877,6 +934,7 @@ function filterAll() {
   activeFilters.floor = new Set(['地面','2F','3F']);
   activeFilters.dir   = new Set(['E 東','N 北','W 西','S 南']);
   activeFilters.view  = new Set(['正常','受阻','部分受阻']);
+  activeFilters.seats = new Set(['<500','500~1000','1000~1500','1500+','N/A']);
   applyFilters();
 }
 
@@ -886,6 +944,7 @@ function filterNone() {
   activeFilters.floor = new Set();
   activeFilters.dir   = new Set();
   activeFilters.view  = new Set();
+  activeFilters.seats = new Set();
   updateOutput();
 }
 
@@ -894,7 +953,8 @@ function applyFilters() {
     const show = activeFilters.type.has(row.dataset.type)
       && activeFilters.floor.has(row.dataset.floor)
       && activeFilters.dir.has(row.dataset.dir)
-      && activeFilters.view.has(row.dataset.view);
+      && activeFilters.view.has(row.dataset.view)
+      && activeFilters.seats.has(row.dataset.seats);
     row.classList.toggle('hidden',!show);
   });
   updateOutput();
