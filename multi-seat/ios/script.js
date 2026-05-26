@@ -18,7 +18,7 @@
   const C = Object.assign({
     concurrent: 2,        // 同時掃幾區（iOS 預設 2）
     interval: 4000,       // 每輪間隔 ms（iOS 預設 4000）
-    areas: ['012','117','118','119','120','226','227','228','229','230','231','306','408','409','410','411','412'],
+    areas: ['004','005','009','010','011'],
     adWait: 30,           // Access Denied 罰等秒
   }, (window.NEGNEG_CONFIG||{}));
 
@@ -94,6 +94,7 @@
     if(paused)return; paused=true; clearTimeout(loopTimer);
     currentInterval=Math.min(currentInterval+1000,12000);
     setBar(`🚫 AD 罰等`,'#8e44ad'); beep();
+    log(`🚫 Access Denied，暫停${C.adWait}s，間隔→${currentInterval}ms`);
     let cd=C.adWait;
     const t=setInterval(()=>{ cd--; setBar(`🚫 AD ${cd}s`,'#8e44ad');
       if(cd<=0){ clearInterval(t); paused=false; if(running){ setBar('▶ 掃描中','#27ae60'); scanLoop(); } } },1000);
@@ -121,7 +122,7 @@
         const isCaptcha=/captcha|보안|verif|로봇|robot|퍼즐|puzzle|slider|drag/i.test(body)
           || f2.querySelector('img[src*="captcha"],canvas,[class*="captcha"],[id*="captcha"]');
         if(isCaptcha){
-          if(!captchaSeen){ captchaSeen=true; setBar('🧩 請手動解驗證','#e67e22'); beep(); }
+          if(!captchaSeen){ captchaSeen=true; setBar('🧩 請手動解驗證','#e67e22'); beep(); log('🧩 偵測到驗證，請手動完成'); }
           captchaWaited++;
           if(captchaWaited>CAPTCHA_GRACE){ clearInterval(ct); paused=false; resumeScan(); }
           return;
@@ -162,37 +163,92 @@
     cursor=(cursor+C.concurrent)%blockList.length;
     setBar(`▶ ${batch.join(',')}`,'#27ae60');
 
-    let adHit=false; const allFound=[];
+    let adHit=false; const allFound=[]; const batchCount={};
     await Promise.all(batch.map(async(blk)=>{
-      try{ const s=await queryBlock(blk); s.forEach(x=>allFound.push(x)); }
-      catch(e){ if(e.message==='ACCESS_DENIED') adHit=true; }
+      try{ const s=await queryBlock(blk); batchCount[blk]=s.length; s.forEach(x=>allFound.push(x)); }
+      catch(e){ if(e.message==='ACCESS_DENIED') adHit=true; batchCount[blk]=-1; }
     }));
+    // 更新各區狀態並重繪
+    for(const blk of batch){ stats[blk]=batchCount[blk]; }
+    renderStats();
     if(adHit){ handleAD(); return; }
 
     if(allFound.length){
       if(FRONT_FIRST){ allFound.sort((a,b)=> a.rowNum!==b.rowNum ? a.rowNum-b.rowNum : Math.abs(a.seatNo-12)-Math.abs(b.seatNo-12)); }
       const best=allFound[0];
       setBar(`🎉 ${best.rowFull}${best.seatNo}`,'#27ae60'); beep();
+      log(`找到 ${allFound.length} 位！最佳 ${best.rowFull}${best.seatNo}號(區${best.block})`);
       attemptClick(best); // AUTO_CLICK 恆為 true
       return;
     }
     loopTimer=setTimeout(scanLoop,currentInterval);
   }
 
-  // ── 極簡狀態列 ──────────────────────────────────
-  const bar=document.createElement('div');
-  bar.style.cssText='position:fixed;top:8px;left:8px;right:8px;z-index:2147483647;'
-    +'display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;'
-    +'background:#1e1e2e;color:#fff;font-family:-apple-system,sans-serif;font-size:13px;'
-    +'box-shadow:0 4px 16px rgba(0,0,0,.4)';
+  // ── 下方可收合面板 ──────────────────────────────
+  const stats={};            // block -> 空位數（-1 表示該區這輪 AD/錯誤）
+  const logLines=[];         // 最近 log
+  const startTime=Date.now();
+
+  const wrap=document.createElement('div');
+  wrap.style.cssText='position:fixed;bottom:8px;left:8px;right:8px;z-index:2147483647;'
+    +'font-family:-apple-system,sans-serif;font-size:13px;color:#fff;'
+    +'background:#1e1e2e;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.5);overflow:hidden';
+
+  // 詳細區（可收合）：各區空位 + log
+  const detail=document.createElement('div');
+  detail.style.cssText='padding:10px 12px 4px;border-bottom:1px solid #313244';
+  const gridLabel=document.createElement('div');
+  gridLabel.style.cssText='color:#a6adc8;font-size:11px;margin-bottom:4px'; gridLabel.textContent='各區空位';
+  const grid=document.createElement('div');
+  grid.style.cssText='display:flex;flex-wrap:wrap;gap:4px;font-size:11px;font-family:monospace;margin-bottom:8px';
+  const logLabel=document.createElement('div');
+  logLabel.style.cssText='color:#a6adc8;font-size:11px;margin-bottom:4px'; logLabel.textContent='記錄';
+  const logBox=document.createElement('div');
+  logBox.style.cssText='background:#11111b;border-radius:6px;padding:6px;height:72px;overflow-y:auto;font-size:10px;font-family:monospace;line-height:1.5';
+  detail.appendChild(gridLabel); detail.appendChild(grid); detail.appendChild(logLabel); detail.appendChild(logBox);
+
+  // 主狀態列：展開鈕 + 狀態 + 計時 + 停止
+  const main=document.createElement('div');
+  main.style.cssText='display:flex;align-items:center;gap:8px;padding:10px 12px';
+  const toggle=document.createElement('button');
+  toggle.textContent='▾';
+  toggle.style.cssText='width:28px;height:28px;background:#313244;color:#fff;border:none;border-radius:6px;font-size:14px';
   const barText=document.createElement('span');
   barText.style.cssText='flex:1;font-weight:600'; barText.textContent='待命';
+  const timer=document.createElement('span');
+  timer.style.cssText='font-family:monospace;font-size:12px;color:#a6adc8'; timer.textContent='00:00';
   const stopBtn=document.createElement('button');
-  stopBtn.textContent='⏹'; 
-  stopBtn.style.cssText='padding:4px 12px;background:#f38ba8;color:#1e1e2e;border:none;border-radius:6px;font-weight:700;font-size:14px';
-  bar.appendChild(barText); bar.appendChild(stopBtn);
-  document.body.appendChild(bar);
-  function setBar(t,c){ barText.textContent=t; bar.style.background=c||'#1e1e2e'; }
+  stopBtn.textContent='⏹';
+  stopBtn.style.cssText='width:36px;height:28px;background:#f38ba8;color:#1e1e2e;border:none;border-radius:6px;font-weight:700;font-size:15px';
+  main.appendChild(toggle); main.appendChild(barText); main.appendChild(timer); main.appendChild(stopBtn);
+
+  wrap.appendChild(detail); wrap.appendChild(main);
+  document.body.appendChild(wrap);
+
+  let expanded=true;
+  toggle.onclick=()=>{ expanded=!expanded; detail.style.display=expanded?'block':'none'; toggle.textContent=expanded?'▾':'▴'; };
+
+  function setBar(t,c){ barText.textContent=t; main.style.background=c||'transparent'; }
+  function renderStats(){
+    grid.innerHTML='';
+    for(const blk of blockList){
+      const v=stats[blk];
+      const has=v>0, ad=v===-1;
+      const s=document.createElement('span');
+      s.style.cssText='padding:2px 5px;border-radius:4px;background:'
+        +(has?'#a6e3a1':ad?'#f38ba8':'#313244')+';color:'+(has?'#1e1e2e':ad?'#1e1e2e':'#6c7086');
+      s.textContent=blk+':'+(v===undefined?'-':ad?'AD':v);
+      grid.appendChild(s);
+    }
+  }
+  function log(msg){
+    const t=new Date().toLocaleTimeString('zh-TW',{hour12:false});
+    logLines.unshift('['+t+'] '+msg);
+    while(logLines.length>30) logLines.pop();
+    logBox.innerHTML=logLines.map(l=>'<div>'+l.replace(/</g,'&lt;')+'</div>').join('');
+  }
+  setInterval(()=>{ const e=Math.floor((Date.now()-startTime)/1000);
+    timer.textContent=String(Math.floor(e/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0'); },1000);
 
   function beep(){
     try{ const ctx=new(window.AudioContext||window.webkitAudioContext)();
@@ -209,16 +265,19 @@
   // ── 停止 ──
   window.__negSeatStop=function(){
     running=false; paused=false; clearTimeout(loopTimer);
-    setBar('⏸ 已停止','#313244');
-    setTimeout(()=>{ try{ bar.remove(); }catch(e){} window.__negSeatRunning=false; },1500);
+    setBar('⏸ 已停止','#313244'); log('已停止');
+    setTimeout(()=>{ try{ wrap.remove(); }catch(e){} window.__negSeatRunning=false; },1500);
   };
   stopBtn.onclick=window.__negSeatStop;
 
   // ── 啟動 ──
-  if(!blockList.length){ setBar('⚠ 未設定區域','#f38ba8'); return; }
+  renderStats();
+  if(!blockList.length){ setBar('⚠ 未設定區域','#f38ba8'); log('未設定區域，停止'); return; }
   params=detectParams();
-  if(!params.GoodsCode||!params.SessionId){ setBar('⚠ 請在座位頁執行','#f38ba8'); }
+  if(!params.GoodsCode||!params.SessionId){ setBar('⚠ 請在座位頁執行','#f38ba8'); log('⚠ 抓不到參數，請在座位選擇頁執行'); }
+  else { log('參數OK Goods='+params.GoodsCode); }
   running=true; cursor=0; currentInterval=C.interval;
-  setBar(`▶ 啟動 ${blockList.length}區/同時${C.concurrent}`,'#27ae60');
+  setBar(`▶ 啟動 ${blockList.length}區`,'#27ae60');
+  log(`啟動：${blockList.length}區，同時${C.concurrent}，間隔${C.interval}ms`);
   scanLoop();
 })();
