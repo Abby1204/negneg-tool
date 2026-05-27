@@ -93,7 +93,7 @@
   function handleAD(){
     if(paused)return; paused=true; clearTimeout(loopTimer);
     currentInterval=Math.min(currentInterval+1000,12000);
-    setBar(`🚫 AD 罰等`,'#8e44ad'); beep();
+    setBar(`🚫 AD 罰等`,'#8e44ad'); beepSoft();
     log(`🚫 Access Denied，暫停${C.adWait}s，間隔→${currentInterval}ms`);
     let cd=C.adWait;
     const t=setInterval(()=>{ cd--; setBar(`🚫 AD ${cd}s`,'#8e44ad');
@@ -122,7 +122,7 @@
         const isCaptcha=/captcha|보안|verif|로봇|robot|퍼즐|puzzle|slider|drag/i.test(body)
           || f2.querySelector('img[src*="captcha"],canvas,[class*="captcha"],[id*="captcha"]');
         if(isCaptcha){
-          if(!captchaSeen){ captchaSeen=true; setBar('🧩 請手動解驗證','#e67e22'); beep(); log('🧩 偵測到驗證，請手動完成'); }
+          if(!captchaSeen){ captchaSeen=true; setBar('🧩 請手動解驗證','#e67e22'); beepSoft(); log('🧩 偵測到驗證，請手動完成'); }
           captchaWaited++;
           if(captchaWaited>CAPTCHA_GRACE){ clearInterval(ct); paused=false; resumeScan(); }
           return;
@@ -139,7 +139,7 @@
           setTimeout(()=>{ try{ f.defaultView.fnSelect(); }catch(e){}
             setTimeout(()=>{
               if(document.querySelector('div.buy_info')){
-                running=false; paused=false; setBar('🎉 進入下一頁！','#27ae60'); beep();
+                running=false; paused=false; setBar('🎉 進入下一頁！','#27ae60'); beepAlert();
               }else{ paused=false; resumeScan(); }
             },800);
           },300);
@@ -176,7 +176,7 @@
     if(allFound.length){
       if(FRONT_FIRST){ allFound.sort((a,b)=> a.rowNum!==b.rowNum ? a.rowNum-b.rowNum : Math.abs(a.seatNo-12)-Math.abs(b.seatNo-12)); }
       const best=allFound[0];
-      setBar(`🎉 ${best.rowFull}${best.seatNo}`,'#27ae60'); beep();
+      setBar(`🎉 ${best.rowFull}${best.seatNo}`,'#27ae60'); beepAlert();
       log(`找到 ${allFound.length} 位！最佳 ${best.rowFull}${best.seatNo}號(區${best.block})`);
       attemptClick(best); // AUTO_CLICK 恆為 true
       return;
@@ -219,7 +219,7 @@
   timer.style.cssText='font-family:monospace;font-size:12px;color:#a6adc8'; timer.textContent='00:00';
   const stopBtn=document.createElement('button');
   stopBtn.textContent='⏹';
-  stopBtn.style.cssText='width:36px;height:28px;background:#f38ba8;color:#1e1e2e;border:none;border-radius:6px;font-weight:700;font-size:15px';
+  stopBtn.style.cssText='width:36px;height:28px;background:#313244;color:#f38ba8;border:1px solid #45475a;border-radius:6px;font-weight:700;font-size:15px';
   main.appendChild(toggle); main.appendChild(barText); main.appendChild(timer); main.appendChild(stopBtn);
 
   wrap.appendChild(detail); wrap.appendChild(main);
@@ -228,7 +228,26 @@
   let expanded=true;
   toggle.onclick=()=>{ expanded=!expanded; detail.style.display=expanded?'block':'none'; toggle.textContent=expanded?'▾':'▴'; };
 
-  function setBar(t,c){ barText.textContent=t; main.style.background=c||'transparent'; }
+  // 依背景色亮度自動選對比文字色（亮底→黑字，深底→白字）
+  function pickTextColor(bg){
+    if(!bg||bg==='transparent') return '#fff';
+    const m=bg.match(/^#?([0-9a-f]{6})$/i);
+    if(!m) return '#fff';
+    const n=parseInt(m[1],16);
+    const r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+    // 相對亮度（YIQ）
+    const yiq=(r*299+g*587+b*114)/1000;
+    return yiq>115 ? '#1a1a1a' : '#fff';
+  }
+  function setBar(t,c){
+    barText.textContent=t;
+    const bg=c||'#1e1e2e';
+    main.style.background=bg;
+    const fg=pickTextColor(bg);
+    barText.style.color=fg;
+    timer.style.color = fg==='#fff' ? '#a6adc8' : '#333';  // 深字配深灰、白字配淺灰
+    toggle.style.color=fg;
+  }
   function renderStats(){
     grid.innerHTML='';
     for(const blk of blockList){
@@ -250,11 +269,26 @@
   setInterval(()=>{ const e=Math.floor((Date.now()-startTime)/1000);
     timer.textContent=String(Math.floor(e/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0'); },1000);
 
-  function beep(){
+  // 找到票/搶到：響亮尖銳警報（高頻 + 重複，明顯）
+  function beepAlert(){
     try{ const ctx=new(window.AudioContext||window.webkitAudioContext)();
-      const o=ctx.createOscillator(); o.type='square'; o.frequency.setValueAtTime(1200,ctx.currentTime);
-      o.connect(ctx.destination); o.start(); setTimeout(()=>o.stop(),1000);
-      // iOS 需使用者互動才解鎖音訊；點書籤算互動，這裡盡力而為
+      const burst=(t,f)=>{ const o=ctx.createOscillator(); const g=ctx.createGain();
+        o.type='square'; o.frequency.setValueAtTime(f,ctx.currentTime+t);
+        g.gain.setValueAtTime(0.5,ctx.currentTime+t);
+        o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.18); };
+      // 三短音急促警報
+      burst(0,1400); burst(0.22,1400); burst(0.44,1600);
+    }catch(e){}
+  }
+  // AD / CAPTCHA：溫柔低頻單音（不嚇人，僅提示）
+  function beepSoft(){
+    try{ const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const o=ctx.createOscillator(); const g=ctx.createGain();
+      o.type='sine'; o.frequency.setValueAtTime(440,ctx.currentTime);
+      g.gain.setValueAtTime(0.0001,ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.25,ctx.currentTime+0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.5);
+      o.connect(g); g.connect(ctx.destination); o.start(); setTimeout(()=>o.stop(),550);
     }catch(e){}
   }
 
