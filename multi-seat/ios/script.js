@@ -139,7 +139,7 @@
           setTimeout(()=>{ try{ f.defaultView.fnSelect(); }catch(e){}
             setTimeout(()=>{
               if(document.querySelector('div.buy_info')){
-                running=false; paused=false; setBar('🎉 進入下一頁！','#27ae60'); beepAlert();
+                running=false; paused=false; setBar('🎉 進入下一頁！','#27ae60'); beepWin();
               }else{ paused=false; resumeScan(); }
             },800);
           },300);
@@ -270,14 +270,31 @@
     timer.textContent=String(Math.floor(e/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0'); },1000);
 
   // 找到票/搶到：響亮尖銳警報（高頻 + 重複，明顯）
+  // 找到空位：三短音急促警報（中等緊迫）
   function beepAlert(){
     try{ const ctx=new(window.AudioContext||window.webkitAudioContext)();
       const burst=(t,f)=>{ const o=ctx.createOscillator(); const g=ctx.createGain();
         o.type='square'; o.frequency.setValueAtTime(f,ctx.currentTime+t);
         g.gain.setValueAtTime(0.5,ctx.currentTime+t);
         o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.18); };
-      // 三短音急促警報
       burst(0,1400); burst(0.22,1400); burst(0.44,1600);
+    }catch(e){}
+  }
+  // 進入下一頁（搶到了！）：上升音階 + 結尾長音，最緊迫
+  function beepWin(){
+    try{ const ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const burst=(t,f,dur)=>{ const o=ctx.createOscillator(); const g=ctx.createGain();
+        o.type='square'; o.frequency.setValueAtTime(f,ctx.currentTime+t);
+        g.gain.setValueAtTime(0.6,ctx.currentTime+t);
+        o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+dur); };
+      // 上升音階 ── 四音越來越高，最後一音拉長
+      burst(0,    1400, 0.14);
+      burst(0.16, 1700, 0.14);
+      burst(0.32, 2000, 0.14);
+      burst(0.48, 2200, 0.45);   // 結尾長音
+      // 重複一輪強化「搶到了」的勝利感
+      burst(1.00, 2200, 0.18);
+      burst(1.22, 2200, 0.40);
     }catch(e){}
   }
   // AD / CAPTCHA：溫柔低頻單音（不嚇人，僅提示）
