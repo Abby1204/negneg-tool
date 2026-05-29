@@ -54,12 +54,22 @@
     return p;
   }
 
+  // 排號 → 數字（用於最前排排序）
+  // 兩種格式都吃：
+  //   1. 純數字열 "S10구역 14열" → 14   ← 正式場（你票券 Row 18 / 釜山）
+  //   2. 字母열   "313구역 G열"  → 7    ← 舊測試場（韓文場館慣例略過 I）
   function rowToNum(rowLabel){
-    const m = rowLabel.match(/([A-Z])\uC5F4/);
-    if(!m) return 999;
-    let c = m[1].charCodeAt(0)-64;
-    if(m[1]>'I') c-=1;
-    return c;
+    // 先試純數字열
+    const n = rowLabel.match(/(\d+)\uC5F4/);  // X열（X 為一個或多個數字）
+    if(n) return parseInt(n[1],10);
+    // 退而求其次：字母열（保留舊測試場相容）
+    const a = rowLabel.match(/([A-Z])\uC5F4/);
+    if(a){
+      let c = a[1].charCodeAt(0)-64;          // A=1, B=2...
+      if(a[1]>'I') c-=1;                      // 場館常略過 I 排
+      return c;
+    }
+    return 999;
   }
   function parseSeats(html, block){
     const seats=[]; const re=/SelectSeat\(this,'([^']*)','([^']*)','([^']*)','([^']*)','([^']*)'\)/g; let m;
