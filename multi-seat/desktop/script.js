@@ -64,15 +64,24 @@
     return p;
   }
 
-  // ── 韓文排號字母 → 數字（A=1, B=2... 沒有 I）用於排序 ──
-  // 座位 title 形如 "[일반석] -313구역 G열-5"，onclick 形如 SelectSeat(this,'3','','313구역 G열','5','313')
+  // ── 排號 → 數字（用於最前排排序）──
+  // 兩種格式都吃：
+  //   1. 純數字열 "S10구역 14열" → 14   ← 正式場（票券 Row 18 / 釜山 BTS）
+  //   2. 字母열   "313구역 G열"  → 7    ← 舊測試場（韓文場館慣例略過 I）
+  // 座位 title 形如 "[지정석] -S10구역 14열-5"
+  // onclick 形如 SelectSeat(this,'1','','S10구역 14열','5','410')
   function rowToNum(rowLabel){
-    // rowLabel 例如 "G열" 或 "313구역 G열"
-    const m = rowLabel.match(/([A-Z])\uC5F4/); // X열
-    if(!m) return 999;
-    let c = m[1].charCodeAt(0) - 64; // A=1
-    if(m[1] > 'I') c -= 1; // 場館常略過 I 排，往前補
-    return c;
+    // 先試純數字열
+    const n = rowLabel.match(/(\d+)\uC5F4/);
+    if(n) return parseInt(n[1],10);
+    // 退而求其次：字母열
+    const a = rowLabel.match(/([A-Z])\uC5F4/);
+    if(a){
+      let c = a[1].charCodeAt(0) - 64; // A=1
+      if(a[1] > 'I') c -= 1;           // 場館常略過 I 排
+      return c;
+    }
+    return 999;
   }
 
   // ── 解析一段 BookSeatDetail 回傳 HTML，回傳可選座位陣列 ──
