@@ -143,6 +143,8 @@
     const res = await fetch(url, { credentials:'include' });
     const html = await res.text();
     if(/Access Denied|Forbidden/i.test(html)) throw new Error('ACCESS_DENIED');
+    // 正常座位頁一定含 SeatR/SeatN/SeatB；都沒有代表回傳不是座位頁（CAPTCHA/失效/空白等）
+    if(!/class=['"]?Seat[RNB]['"]?/i.test(html)) throw new Error('SUSPICIOUS');
     return parseSeats(html, block);
   }
 
@@ -335,16 +337,24 @@
 
     setStatus(`▶ 掃描中：${batch.join(', ')}`, '#27ae60');
 
-    let adHit = false;
+    let adHit = false; let suspiciousCnt = 0; const susBlocks = [];
     const results = await Promise.all(batch.map(async (blk)=>{
       try{
         const seats = await queryBlock(blk);
-        stats[blk] = { avail: seats.length, seats };
+        stats[blk] = { avail: seats.length, seats, status: 'ok' };
         return { blk, seats };
       }catch(e){
-        if(e.message==='ACCESS_DENIED'){ adHit = true; }
-        else { /* 網路或解析錯誤，當作該區 0 */ }
-        stats[blk] = { avail: 0, seats: [] };
+        if(e.message==='ACCESS_DENIED'){
+          adHit = true;
+          stats[blk] = { avail: 0, seats: [], status: 'ad' };
+        }else if(e.message==='SUSPICIOUS'){
+          suspiciousCnt++; susBlocks.push(blk);
+          stats[blk] = { avail: 0, seats: [], status: 'sus' };
+        }else{
+          // 網路或其他錯誤，也歸異常
+          suspiciousCnt++; susBlocks.push(blk);
+          stats[blk] = { avail: 0, seats: [], status: 'sus' };
+        }
         return { blk, seats: [] };
       }
     }));
@@ -352,6 +362,11 @@
     renderStats();
 
     if(adHit){ handleAD(); return; }
+
+    // 異常（非 AD）：log 提示，繼續掃
+    if(suspiciousCnt>0){
+      log(`⚠ 疑似異常（CAPTCHA/失效）：${susBlocks.join(',')} — 請確認頁面是否有驗證或彈窗`, 'ad');
+    }
 
     // 合併所有找到的空位
     const allFound = [];
@@ -440,11 +455,18 @@
     statsGrid.innerHTML = '';
     for(const blk of blockList){
       const s = stats[blk];
-      const a = s? s.avail : '-';
-      const span = document.createElement('span');
       const has = s && s.avail>0;
-      span.style.cssText = `padding:2px 5px;border-radius:4px;background:${has?'#a6e3a1':'#313244'};color:${has?'#1e1e2e':'#6c7086'}`;
-      span.textContent = `${blk}:${a}`;
+      const ad  = s && s.status==='ad';
+      const sus = s && s.status==='sus';
+      // 顏色：綠=有位 / 紅=AD / 橘=疑似異常 / 灰=未掃或真0
+      let bg='#313244', fg='#6c7086';
+      if(has)      { bg='#a6e3a1'; fg='#1e1e2e'; }
+      else if(ad)  { bg='#f38ba8'; fg='#1e1e2e'; }
+      else if(sus) { bg='#fab387'; fg='#1e1e2e'; }
+      const label = !s ? '-' : ad ? 'AD' : sus ? '?' : s.avail;
+      const span = document.createElement('span');
+      span.style.cssText = `padding:2px 5px;border-radius:4px;background:${bg};color:${fg}`;
+      span.textContent = `${blk}:${label}`;
       statsGrid.appendChild(span);
     }
   }
