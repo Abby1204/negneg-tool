@@ -94,11 +94,22 @@
       UILock:'Y', SessionId:params.SessionId, BizCode:params.BizCode,
       GoodsBizCode:params.GoodsBizCode, GlobalSportsYN:params.GlobalSportsYN||'N',
       SeatCheckCnt:'0', InterlockingGoods:'' });
-    const res=await fetch('/Global/Play/Book/BookSeatDetail.asp?'+qp.toString(),{credentials:'include'});
-    const html=await res.text();
+    // 加 8 秒 timeout，網路慢直接視為 NETERR（不算可疑）
+    const ctl = new AbortController();
+    const tm = setTimeout(()=>ctl.abort(), 8000);
+    let html;
+    try{
+      const res = await fetch('/Global/Play/Book/BookSeatDetail.asp?'+qp.toString(), {credentials:'include', signal:ctl.signal});
+      html = await res.text();
+    }catch(e){
+      clearTimeout(tm);
+      throw new Error('NETERR');     // timeout / abort / 連線錯誤
+    }
+    clearTimeout(tm);
     if(/Access Denied|Forbidden/i.test(html)) throw new Error('ACCESS_DENIED');
-    // 正常座位頁一定含 SeatR/SeatN/SeatB；都沒有代表回傳不是座位頁（CAPTCHA/session 失效/空白等）
-    if(!/class=['"]?Seat[RNB]['"]?/i.test(html)) throw new Error('SUSPICIOUS');
+    // 收緊：正常座位頁回傳通常上萬字元；不到 2000 字 + 沒任何 Seat 標籤 才算 SUSPICIOUS
+    // 這樣排除「網路抖動回了部分內容」「短回應」等雜訊
+    if(html.length < 2000 && !/class=['"]?Seat[RNB]['"]?/i.test(html)) throw new Error('SUSPICIOUS');
     return parseSeats(html, block);
   }
 
@@ -184,14 +195,19 @@
       }catch(e){
         if(e.message==='ACCESS_DENIED'){ adHit=true; batchCount[blk]=-1; }
         else if(e.message==='SUSPICIOUS'){ suspiciousCnt++; batchCount[blk]=-2; }
-        else { batchCount[blk]=-2; suspiciousCnt++; }  // 網路錯誤也歸異常
+        else if(e.message==='NETERR'){
+          // 網路錯誤 / timeout — 完全當無事發生（保持上一輪狀態，下一輪重試）
+          if(stats[blk]===undefined) batchCount[blk]=-3; // 第一次就失敗才標灰問號
+          else batchCount[blk]=stats[blk];               // 維持上一輪狀態
+        }
+        else { batchCount[blk]=stats[blk]!==undefined?stats[blk]:-3; }
       }
     }));
     // 更新各區狀態並重繪
     for(const blk of batch){ stats[blk]=batchCount[blk]; }
     renderStats();
     if(adHit){ handleAD(); return; }
-    // 異常（非 AD）分兩種處理
+    // SUSPICIOUS 分兩種處理（NETERR 完全不報）
     if(suspiciousCnt>0){
       const susBlocks=batch.filter(b=>batchCount[b]===-2);
       const allSus = suspiciousCnt===batch.length;
@@ -206,10 +222,8 @@
         }catch(e){ log('切區失敗：'+(e.message||e)); }
         enterResumeMode();
         return;
-      }else{
-        // 單區異常 — 多半是雜訊或部分受影響。log 一行繼續掃，不打擾。
-        log(`⚠ 單區異常：${susBlocks.join(',')}（繼續掃，下一輪會重試）`);
       }
+      // 單區異常 — 只在面板顯示橘色 ?，不寫 log，不打擾
     }
 
     if(allFound.length){
