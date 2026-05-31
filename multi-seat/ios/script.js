@@ -191,11 +191,25 @@
     for(const blk of batch){ stats[blk]=batchCount[blk]; }
     renderStats();
     if(adHit){ handleAD(); return; }
-    // 異常（非 AD）：log 提示，但繼續掃。整批都異常時換溫柔提示音 + 較明顯訊息
+    // 異常（非 AD）分兩種處理
     if(suspiciousCnt>0){
       const susBlocks=batch.filter(b=>batchCount[b]===-2);
-      log(`⚠ 疑似異常（CAPTCHA/失效）：${susBlocks.join(',')} — 請確認頁面是否有驗證或彈窗`);
-      if(suspiciousCnt===batch.length){ beepSoft(); }
+      const allSus = suspiciousCnt===batch.length;
+      if(allSus){
+        // 整批異常 — 多半是 CAPTCHA/失效。自動切到第一區觸發拼圖，等你按繼續才恢復
+        const target = susBlocks[0];
+        log(`⚠ 整批異常（${susBlocks.join(',')}）— 自動切到 ${target}，解完按「▶ 繼續」`);
+        setBar(`🧩 解驗證 → 按 ▶`,'#e67e22');
+        beepSoft();
+        try{
+          document.getElementById('ifrmSeat').contentDocument.defaultView.fnBlockSeatUpdate('','',target);
+        }catch(e){ log('切區失敗：'+(e.message||e)); }
+        enterResumeMode();
+        return;
+      }else{
+        // 單區異常 — 多半是雜訊或部分受影響。log 一行繼續掃，不打擾。
+        log(`⚠ 單區異常：${susBlocks.join(',')}（繼續掃，下一輪會重試）`);
+      }
     }
 
     if(allFound.length){
@@ -342,13 +356,43 @@
   const _a=window.alert;
   window.alert=(m)=>{ if(m&&(String(m).includes('1 minute')||String(m).includes('minute left')))return; _a(m); };
 
+  // ── 等候模式（整批異常時用）──
+  // 按鈕變「▶ 繼續」、無限期暫停掃描、計時器持續走、按下繼續才恢復
+  let waitingResume = false;
+  function enterResumeMode(){
+    waitingResume = true;
+    paused = true;
+    clearTimeout(loopTimer);
+    stopBtn.textContent = '▶';
+    stopBtn.style.background = '#a6e3a1';   // 綠色，跟停止鈕的紅色明顯不同
+    stopBtn.style.color = '#1e1e2e';
+    stopBtn.style.borderColor = '#a6e3a1';
+  }
+  function exitResumeMode(){
+    waitingResume = false;
+    stopBtn.textContent = '⏹';
+    stopBtn.style.background = '#313244';
+    stopBtn.style.color = '#f38ba8';
+    stopBtn.style.borderColor = '#45475a';
+    if(running){
+      paused = false;
+      setBar('▶ 掃描中','#27ae60');
+      log('▶ 繼續掃描');
+      scanLoop();
+    }
+  }
+
   // ── 停止 ──
   window.__negSeatStop=function(){
     running=false; paused=false; clearTimeout(loopTimer);
     setBar('⏸ 已停止','#313244'); log('已停止');
     setTimeout(()=>{ try{ wrap.remove(); }catch(e){} window.__negSeatRunning=false; },1500);
   };
-  stopBtn.onclick=window.__negSeatStop;
+  stopBtn.onclick=function(){
+    // 等候模式 → 點繼續；其他 → 點停止
+    if(waitingResume) exitResumeMode();
+    else window.__negSeatStop();
+  };
 
   // ── 啟動 ──
   renderStats();
