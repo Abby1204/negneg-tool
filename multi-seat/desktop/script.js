@@ -140,11 +140,21 @@
       InterlockingGoods:'',
     });
     const url = '/Global/Play/Book/BookSeatDetail.asp?'+qp.toString();
-    const res = await fetch(url, { credentials:'include' });
-    const html = await res.text();
+    // 加 8 秒 timeout，網路慢直接視為 NETERR（不算可疑）
+    const ctl = new AbortController();
+    const tm = setTimeout(()=>ctl.abort(), 8000);
+    let html;
+    try{
+      const res = await fetch(url, { credentials:'include', signal:ctl.signal });
+      html = await res.text();
+    }catch(e){
+      clearTimeout(tm);
+      throw new Error('NETERR');
+    }
+    clearTimeout(tm);
     if(/Access Denied|Forbidden/i.test(html)) throw new Error('ACCESS_DENIED');
-    // 正常座位頁一定含 SeatR/SeatN/SeatB；都沒有代表回傳不是座位頁（CAPTCHA/失效/空白等）
-    if(!/class=['"]?Seat[RNB]['"]?/i.test(html)) throw new Error('SUSPICIOUS');
+    // 收緊：不到 2000 字 + 沒任何 Seat 標籤才算 SUSPICIOUS（排除網路抖動雜訊）
+    if(html.length < 2000 && !/class=['"]?Seat[RNB]['"]?/i.test(html)) throw new Error('SUSPICIOUS');
     return parseSeats(html, block);
   }
 
@@ -350,10 +360,12 @@
         }else if(e.message==='SUSPICIOUS'){
           suspiciousCnt++; susBlocks.push(blk);
           stats[blk] = { avail: 0, seats: [], status: 'sus' };
+        }else if(e.message==='NETERR'){
+          // 網路抖動 / timeout：不計可疑，保持上一輪狀態
+          if(!stats[blk]) stats[blk] = { avail: 0, seats: [], status: 'neterr' };
+          // 已有先前狀態就不動
         }else{
-          // 網路或其他錯誤，也歸異常
-          suspiciousCnt++; susBlocks.push(blk);
-          stats[blk] = { avail: 0, seats: [], status: 'sus' };
+          if(!stats[blk]) stats[blk] = { avail: 0, seats: [], status: 'neterr' };
         }
         return { blk, seats: [] };
       }
@@ -363,9 +375,22 @@
 
     if(adHit){ handleAD(); return; }
 
-    // 異常（非 AD）：log 提示，繼續掃
+    // SUSPICIOUS 分兩種處理（NETERR 完全不報）
     if(suspiciousCnt>0){
-      log(`⚠ 疑似異常（CAPTCHA/失效）：${susBlocks.join(',')} — 請確認頁面是否有驗證或彈窗`, 'ad');
+      const allSus = suspiciousCnt===batch.length;
+      if(allSus){
+        // 整批異常 — 多半是 CAPTCHA/失效。自動切到第一區觸發拼圖，等你按繼續才恢復
+        const target = susBlocks[0];
+        log(`⚠ 整批異常（${susBlocks.join(',')}）— 自動切到 ${target}，解完按「▶ 繼續」`, 'ad');
+        setStatus(`🧩 解驗證 → 按 ▶ 繼續`, '#e67e22');
+        playAlert();
+        try{
+          document.getElementById('ifrmSeat').contentDocument.defaultView.fnBlockSeatUpdate('','',target);
+        }catch(e){ log('切區失敗：'+(e.message||e), 'ad'); }
+        enterResumeMode();
+        return;
+      }
+      // 單區異常 — 只在面板顯示橘色 ?，不寫 log，不打擾
     }
 
     // 合併所有找到的空位
@@ -547,7 +572,35 @@
     setStatus('▶ 掃描中','#27ae60');
     scanLoop();
   };
+
+  // ── 等候模式（整批異常時用）──
+  let waitingResume = false;
+  function enterResumeMode(){
+    waitingResume = true;
+    paused = true;
+    clearTimeout(loopTimer);
+    const btn = $('#mbStop');
+    btn.textContent = '▶ 繼續';
+    btn.style.background = '#a6e3a1';
+    btn.style.color = '#1e1e2e';
+  }
+  function exitResumeMode(){
+    waitingResume = false;
+    const btn = $('#mbStop');
+    btn.textContent = '⏹ 停止';
+    btn.style.background = '#f38ba8';
+    btn.style.color = '#1e1e2e';
+    if(running){
+      paused = false;
+      setStatus('▶ 掃描中', '#27ae60');
+      log('▶ 繼續掃描', 'info');
+      scanLoop();
+    }
+  }
+
   $('#mbStop').onclick = ()=>{
+    // 等候模式 → 點繼續；其他 → 點停止
+    if(waitingResume){ exitResumeMode(); return; }
     running = false; paused = false;
     clearTimeout(loopTimer);
     setStatus('⏸ 已停止','#313244');
