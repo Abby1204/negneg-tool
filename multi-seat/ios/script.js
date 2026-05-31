@@ -97,6 +97,8 @@
     const res=await fetch('/Global/Play/Book/BookSeatDetail.asp?'+qp.toString(),{credentials:'include'});
     const html=await res.text();
     if(/Access Denied|Forbidden/i.test(html)) throw new Error('ACCESS_DENIED');
+    // 正常座位頁一定含 SeatR/SeatN/SeatB；都沒有代表回傳不是座位頁（CAPTCHA/session 失效/空白等）
+    if(!/class=['"]?Seat[RNB]['"]?/i.test(html)) throw new Error('SUSPICIOUS');
     return parseSeats(html, block);
   }
 
@@ -173,15 +175,28 @@
     cursor=(cursor+C.concurrent)%blockList.length;
     setBar(`▶ ${batch.join(',')}`,'#27ae60');
 
-    let adHit=false; const allFound=[]; const batchCount={};
+    let adHit=false; let suspiciousCnt=0; const allFound=[]; const batchCount={};
     await Promise.all(batch.map(async(blk)=>{
-      try{ const s=await queryBlock(blk); batchCount[blk]=s.length; s.forEach(x=>allFound.push(x)); }
-      catch(e){ if(e.message==='ACCESS_DENIED') adHit=true; batchCount[blk]=-1; }
+      try{
+        const s=await queryBlock(blk);
+        batchCount[blk]=s.length;
+        s.forEach(x=>allFound.push(x));
+      }catch(e){
+        if(e.message==='ACCESS_DENIED'){ adHit=true; batchCount[blk]=-1; }
+        else if(e.message==='SUSPICIOUS'){ suspiciousCnt++; batchCount[blk]=-2; }
+        else { batchCount[blk]=-2; suspiciousCnt++; }  // 網路錯誤也歸異常
+      }
     }));
     // 更新各區狀態並重繪
     for(const blk of batch){ stats[blk]=batchCount[blk]; }
     renderStats();
     if(adHit){ handleAD(); return; }
+    // 異常（非 AD）：log 提示，但繼續掃。整批都異常時換溫柔提示音 + 較明顯訊息
+    if(suspiciousCnt>0){
+      const susBlocks=batch.filter(b=>batchCount[b]===-2);
+      log(`⚠ 疑似異常（CAPTCHA/失效）：${susBlocks.join(',')} — 請確認頁面是否有驗證或彈窗`);
+      if(suspiciousCnt===batch.length){ beepSoft(); }
+    }
 
     if(allFound.length){
       if(FRONT_FIRST){ allFound.sort((a,b)=> a.rowNum!==b.rowNum ? a.rowNum-b.rowNum : Math.abs(a.seatNo-12)-Math.abs(b.seatNo-12)); }
@@ -262,11 +277,15 @@
     grid.innerHTML='';
     for(const blk of blockList){
       const v=stats[blk];
-      const has=v>0, ad=v===-1;
+      const has=v>0, ad=v===-1, sus=v===-2;
+      // 顏色：綠=有位 / 紅=AD / 橘=疑似異常 / 灰=未掃或真0
+      let bg='#313244', fg='#6c7086';
+      if(has)      { bg='#a6e3a1'; fg='#1e1e2e'; }      // 綠
+      else if(ad)  { bg='#f38ba8'; fg='#1e1e2e'; }      // 紅
+      else if(sus) { bg='#fab387'; fg='#1e1e2e'; }      // 橘（疑似異常）
       const s=document.createElement('span');
-      s.style.cssText='padding:2px 5px;border-radius:4px;background:'
-        +(has?'#a6e3a1':ad?'#f38ba8':'#313244')+';color:'+(has?'#1e1e2e':ad?'#1e1e2e':'#6c7086');
-      s.textContent=blk+':'+(v===undefined?'-':ad?'AD':v);
+      s.style.cssText=`padding:2px 5px;border-radius:4px;background:${bg};color:${fg}`;
+      s.textContent = blk + ':' + (v===undefined ? '-' : ad ? 'AD' : sus ? '?' : v);
       grid.appendChild(s);
     }
   }
