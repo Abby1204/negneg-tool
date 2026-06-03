@@ -7,8 +7,6 @@
     _origAlert(msg);
   };
 
-  _origAlert('⚡ 閃電模式啟動！點確定開始');
-
   let running = true;
   let submitted = false;
   const startTime = Date.now();
@@ -16,14 +14,16 @@
   // 計時器
   const timerDisplay = document.createElement('div');
   timerDisplay.style.cssText = 'position:fixed;bottom:60px;right:20px;z-index:99999;padding:6px 12px;background:rgba(0,0,0,0.7);color:white;border-radius:8px;font-size:13px;font-family:monospace';
-  timerDisplay.innerText = '⏱ 00:00';
+  timerDisplay.innerText = '⚡ 啟動中...';
   document.body.appendChild(timerDisplay);
-  setInterval(() => {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
-    const s = String(elapsed % 60).padStart(2, '0');
-    timerDisplay.innerText = `⏱ ${m}:${s}`;
-  }, 1000);
+  setTimeout(() => {
+    setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      timerDisplay.innerText = `⏱ ${m}:${s}`;
+    }, 1000);
+  }, 500);
 
   // 停止按鈕
   const stopBtn = document.createElement('button');
@@ -57,9 +57,9 @@
           const check = setInterval(() => {
             if (document.querySelector('div.buy_info')) {
               clearInterval(check);
-              _origAlert('🎉 座位已送出！趕快去付款！');
               stopBtn.innerText = '🎉 已送出！';
               stopBtn.style.background = '#27ae60';
+              timerDisplay.innerText = '🎉 去付款！';
             }
           }, 300);
           setTimeout(() => clearInterval(check), 5000);
