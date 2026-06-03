@@ -1,0 +1,1 @@
+javascript:(function(){fetch('https://raw.githubusercontent.com/Abby1204/negneg-tool/main/seat/ios/manual.js?t='+Date.now()).then(function(r){return r.text();}).then(function(code){eval(code);}).catch(function(){alert('載入失敗');});})();
