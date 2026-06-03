@@ -1,17 +1,11 @@
 (function(){
-  // ═══════════════════════════════
-  // 參數設定區（可自行調整）
-  // ═══════════════════════════════
-  const AREAS=['002','003','004','005','008','009','010','011',
-               '022','023','024','027','028','029','042','043',
-               '044','045','048','049','050','051','062','063',
-               '064','067','068','069'];
-  const SCANS_PER_AREA=2;      // 同區掃幾次再換區
-  const QUICK_SCAN_INTERVAL=300;
-  const NO_SEAT_ATTEMPTS=3;    // 每次掃描等幾次找不到座位就算沒座位
-  const WHITEPAGE_ATTEMPTS=16; // 白屏超時次數（約5秒）
-  const ACCESS_DENIED_WAIT=30; // Access Denied 等待秒數
-  // ═══════════════════════════════
+  const cfg=window.NEGNEG_CONFIG||{};
+  const AREAS=cfg.areas||['002','003','004','005'];
+  const SCANS_PER_AREA=cfg.scans_per_area||2;
+  const QUICK_SCAN_INTERVAL=cfg.scan_interval||300;
+  const NO_SEAT_ATTEMPTS=cfg.no_seat_attempts||3;
+  const WHITEPAGE_ATTEMPTS=cfg.whitepage_attempts||16;
+  const ACCESS_DENIED_WAIT=cfg.access_denied_wait||30;
 
   // 攔截1分鐘提示
   const _origAlert=window.alert;
@@ -21,6 +15,27 @@
       return;
     }
     _origAlert(msg);
+  };
+
+  // 啟動確認 → 解鎖 iOS 音效
+  _origAlert('✅ 腳本已啟動！點確定開始掃描');
+  const AC=window.AudioContext||window.webkitAudioContext;
+  const audioCtx=AC?new AC():null;
+
+  const playAlert=()=>{
+    try{
+      if(!audioCtx)return;
+      if(audioCtx.state==='suspended')audioCtx.resume();
+      const osc=audioCtx.createOscillator();
+      const gain=audioCtx.createGain();
+      osc.type='square';
+      osc.frequency.setValueAtTime(1200,audioCtx.currentTime);
+      gain.gain.setValueAtTime(1.0,audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      setTimeout(()=>osc.stop(),1500);
+    }catch(e){console.log('Audio Error');}
   };
 
   let currentIndex=0;
@@ -47,16 +62,6 @@
   stopBtn.style.cssText='position:fixed;bottom:20px;right:20px;z-index:99999;padding:10px 16px;background:#e74c3c;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)';
   stopBtn.onclick=()=>{running=false;clearTimeout(areaTimer);clearInterval(quickScan);stopBtn.innerText='✅ 已停止';stopBtn.style.background='#888';};
   document.body.appendChild(stopBtn);
-
-  const playAlert=()=>{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    const osc=ctx.createOscillator();
-    osc.type='square';
-    osc.frequency.setValueAtTime(1200,ctx.currentTime);
-    osc.connect(ctx.destination);
-    osc.start();
-    setTimeout(()=>osc.stop(),1500);
-  };
 
   const handleAccessDenied=()=>{
     console.log(`Access Denied！暫停${ACCESS_DENIED_WAIT}秒...`);
@@ -134,17 +139,6 @@
     if(!running||submitted)return;
     clearInterval(quickScan);
     clearTimeout(areaTimer);
-
-    // ── 座位統計開始（用完刪除這段）──
-    try{
-      const f=document.getElementById('ifrmSeat').contentDocument;
-      const f2=f.getElementById('ifrmSeatDetail').contentDocument;
-      const available=f2.querySelectorAll('span[onclick*="SelectSeat"]').length;
-      const total=f2.querySelectorAll('span[class*="Seat"]').length;
-      console.log(`區域：${AREAS[index]} | 可用：${available} / 總格子：${total}`);
-    }catch(e){}
-    // ── 座位統計結束（用完刪除這段）──
-
     let attempts=0;
     quickScan=setInterval(()=>{
       if(!running||submitted){clearInterval(quickScan);return;}
@@ -179,6 +173,11 @@
     console.log(`換區：${area} Side (${currentIndex+1}/${AREAS.length})`);
     try{
       const f=document.getElementById('ifrmSeat').contentDocument;
+      if(typeof f.defaultView.fnBlockSeatUpdate!=='function'){
+        console.log('頁面尚未就緒，等待500ms...');
+        setTimeout(()=>goToArea(index),500);
+        return;
+      }
       f.defaultView.fnBlockSeatUpdate('','',area);
     }catch(e){console.log('換區錯誤:',e);}
     goToAreaScan(currentIndex);
