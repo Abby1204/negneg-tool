@@ -19,6 +19,12 @@
   timerDisplay.style.cssText = 'position:fixed;bottom:60px;right:20px;z-index:99999;padding:6px 12px;background:rgba(0,0,0,0.7);color:white;border-radius:8px;font-size:13px;font-family:monospace';
   timerDisplay.innerText = '⚡ 啟動中...';
   document.body.appendChild(timerDisplay);
+
+  // 閃電模式標籤
+  const modeLabel = document.createElement('div');
+  modeLabel.style.cssText = 'position:fixed;bottom:92px;right:20px;z-index:99999;padding:4px 10px;background:rgba(124,92,252,0.85);color:white;border-radius:6px;font-size:11px;font-family:monospace;letter-spacing:1px';
+  modeLabel.innerText = '⚡ 閃電模式';
+  document.body.appendChild(modeLabel);
   setTimeout(() => {
     setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
