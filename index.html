@@ -236,141 +236,145 @@
   </div>
 
   <header>
-    <div class="badge">🎟 TICKET TOOL v3.0</div>
+    <div class="badge">🎟 TICKET TOOL v2.1</div>
     <h1>NEG NEG </h1>
     <p class="subtitle">2026 ARIRANG CONCERT TOUR</p>
   </header>
 
   <div class="version-bar">
-    <div class="version-dot"></div>
-    <div class="version-text">最新版本 <strong>v3.0</strong> · 新增 <strong>多區 Multi</strong> 功能 · 適用場次 <strong>6/12,6/13 2026</strong></div>
+  <div class="version-dot"></div>
+  <div class="version-text">最新版本 <strong>v2.2</strong> · 更新日期 <strong>2026/5/11</strong> · 適用場次 <strong>6/12,6/13 2026</strong></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:32px;">
+
+  <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
+    <span style="color:#5cfc8a;font-size:16px;">✅</span>
+    <span style="color:#5cfc8a;font-weight:700;">已驗證</span>
+    <span style="color:var(--muted);">剩餘1分鐘對話框偵測並自動點選確定</span>
   </div>
 
-  <!-- 第一層 Tab：功能 -->
+  <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
+    <span style="color:#5cfc8a;font-size:16px;">✅</span>
+    <span style="color:#5cfc8a;font-weight:700;">已驗證</span>
+    <span style="color:var(--muted);">遇到AD時會等待N秒 (由參數指定秒數)</span>
+  </div>
+
+  <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
+    <span style="color:#5cfc8a;font-size:16px;">✅</span>
+    <span style="color:#5cfc8a;font-weight:700;">已驗證</span>
+    <span style="color:var(--muted);">白屏超時換區</span>
+  </div>
+
+
+  <div style="background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
+    <span style="color:var(--gold);font-size:16px;">⚠️</span>
+    <span style="color:var(--gold);font-weight:700;">尚未驗證</span>
+    <span style="color:var(--muted);">座位被鎖定後，按下確認鍵繼續同區掃票（邏輯已寫入，待確認）</span>
+  </div>
+
+  <div style="background:rgba(252,92,125,0.08);border:1px solid rgba(252,92,125,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
+    <span style="color:var(--accent2);font-size:16px;">❌</span>
+    <span style="color:var(--accent2);font-weight:700;">未支援</span>
+    <span style="color:var(--muted);">拼圖驗證碼（無法自動化，需手動處理）</span>
+  </div>
+
+</div>
+
+  <!-- Tab Bar -->
   <div class="tab-bar">
-    <button class="tab-btn func-tab active" data-func="classic" onclick="switchFunc('classic')">🎯 原版搶票</button>
-    <button class="tab-btn func-tab" data-func="multi" onclick="switchFunc('multi')">🎫 多區 Multi</button>
+    <button class="tab-btn active" onclick="switchTab('desktop')">🖥 Desktop</button>
+    <button class="tab-btn" onclick="switchTab('ios')">📱 iOS / iPad</button>
+    <button class="tab-btn" onclick="switchTab('flash')">⚡ Flash</button>
   </div>
 
-  <!-- 第二層 Tab：平台 -->
-  <div class="tab-bar" style="margin-top:-12px;">
-    <button class="tab-btn plat-tab active" data-plat="desktop" onclick="switchPlat('desktop')">🖥 Desktop (console) </button>
-    <button class="tab-btn plat-tab" data-plat="ios" onclick="switchPlat('ios')">📱 iOS / iPad (bookmarklet) </button>
-  </div>
+  <!-- Desktop Tab -->
+  <div class="tab-content active" id="tab-desktop">
 
-  <!-- 功能說明徽章（依功能切換） -->
-  <div id="badge-classic" class="func-badges" style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
-    <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-      <span style="color:#5cfc8a;font-size:16px;">✅</span><span style="color:#5cfc8a;font-weight:700;">已驗證</span><span style="color:var(--muted);">單區逐區掃描，溫和不易觸發驗證</span>
-    </div>
-    <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-      <span style="color:#5cfc8a;font-size:16px;">✅</span><span style="color:#5cfc8a;font-weight:700;">已驗證</span><span style="color:var(--muted);">白屏超時換區、AD 自動等待</span>
-    </div>
-    <div style="background:rgba(252,92,125,0.08);border:1px solid rgba(252,92,125,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-      <span style="color:var(--accent2);font-size:16px;">❌</span><span style="color:var(--accent2);font-weight:700;">未支援</span><span style="color:var(--muted);">拼圖驗證碼（需手動）</span>
-    </div>
-  </div>
-
-  <div id="badge-multi" class="func-badges" style="display:none;flex-direction:column;gap:8px;margin-bottom:24px;">
-    <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-      <span style="color:#5cfc8a;font-size:16px;">✅</span><span style="color:#5cfc8a;font-weight:700;">核心已測</span><span style="color:var(--muted);">多區並發掃描、最前排優先、命中自動點擊</span>
-    </div>
-    <div style="background:rgba(92,252,138,0.08);border:1px solid rgba(92,252,138,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-      <span style="color:#5cfc8a;font-size:16px;">✅</span><span style="color:#5cfc8a;font-weight:700;">已測</span><span style="color:var(--muted);">白屏/被搶走自動退回換區、CAPTCHA 等待</span>
-    </div>
-    <div style="background:rgba(245,197,24,0.08);border:1px solid rgba(245,197,24,0.3);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:12px;font-family:'Space Mono',monospace;">
-      <span style="color:var(--gold);font-size:16px;">⚠️</span><span style="color:var(--gold);font-weight:700;">注意</span><span style="color:var(--muted);">並發較易觸發 CAPTCHA，建議同時掃 2 區、間隔 4000ms 起步</span>
-    </div>
-  </div>
-
-  <!-- 四種輸出（依 功能×平台 顯示其一） -->
-
-  <!-- classic × desktop -->
-  <div class="out-pane" data-func="classic" data-plat="desktop">
-    <div class="section">
-      <div class="section-title">💻 原版搶票腳本 · Desktop</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">進入座位選擇頁，按 <code style="background:rgba(124,92,252,0.2);color:var(--accent);padding:1px 6px;border-radius:4px;">F12</code> → Console，貼上下方腳本執行。記得先在上方篩選器選好區域，腳本內的 AREAS 已自動帶入。</div>
-      <div class="script-box">
-        <div class="script-header">
-          <div class="script-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-          <div class="script-label" id="lbl-classic-desktop">載入中...</div>
-          <button class="copy-btn" onclick="copyScriptBox('classic-desktop',this)" id="btn-classic-desktop" disabled>複製腳本</button>
-        </div>
-        <div class="script-code" id="code-classic-desktop"><div class="script-loading">⏳ 載入腳本中...</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- classic × ios -->
-  <div class="out-pane" data-func="classic" data-plat="ios" style="display:none;">
-    <div class="section">
-      <div class="section-title">🔖 原版搶票 Bookmarklet · iOS</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">填參數後複製下方結果存進書籤網址。<span style="color:var(--gold);">areas 自動帶入上方篩選器結果。</span></div>
-      <div class="card">
-        <div class="bm-param"><label>scans_per_area</label><div style="display:flex;align-items:center;"><input type="number" id="c_scans" value="2" min="1" max="10" oninput="genClassicBM()"><span class="param-desc">同區掃幾次</span></div></div>
-        <div class="bm-param"><label>scan_interval</label><div style="display:flex;align-items:center;"><input type="number" id="c_interval" value="300" min="100" max="5000" oninput="genClassicBM()"><span class="param-desc">掃描間隔 ms</span></div></div>
-        <div class="bm-param"><label>no_seat_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="c_noseat" value="3" min="1" max="20" oninput="genClassicBM()"><span class="param-desc">沒座位換區次數</span></div></div>
-        <div class="bm-param"><label>whitepage_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="c_white" value="16" min="1" max="50" oninput="genClassicBM()"><span class="param-desc">白屏超時次數</span></div></div>
-        <div class="bm-param"><label>access_denied_wait</label><div style="display:flex;align-items:center;"><input type="number" id="c_ad" value="30" min="5" max="300" oninput="genClassicBM()"><span class="param-desc">AD 等待秒數</span></div></div>
-      </div>
-      <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
-          <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">產生結果 · 存入書籤網址欄</span>
-          <button class="copy-btn" onclick="copyBox('out-classic-bm',this)" id="btn-classic-bm">複製</button>
-        </div>
-        <div id="out-classic-bm" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- multi × desktop -->
-  <div class="out-pane" data-func="multi" data-plat="desktop" style="display:none;">
-    <div class="section">
-      <div class="section-title">💻 多區搶票腳本 · Desktop</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">多區並發掃描版。F12 → Console 貼上執行，右上角會出現面板（可勾選區域、設定同時掃幾區/間隔）。<span style="color:var(--gold);">面板的區域預設帶入上方篩選器結果。</span></div>
-      <div class="script-box">
-        <div class="script-header">
-          <div class="script-dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>
-          <div class="script-label" id="lbl-multi-desktop">載入中...</div>
-          <button class="copy-btn" onclick="copyScriptBox('multi-desktop',this)" id="btn-multi-desktop" disabled>複製腳本</button>
-        </div>
-        <div class="script-code" id="code-multi-desktop"><div class="script-loading">⏳ 載入腳本中...</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- multi × ios -->
-  <div class="out-pane" data-func="multi" data-plat="ios" style="display:none;">
-    <div class="section">
-      <div class="section-title">🔖 多區搶票 Bookmarklet · iOS</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6;">多區並發版，固定自動點擊 + 最前排優先。填參數後複製存書籤。<span style="color:var(--gold);">areas 自動帶入上方篩選器結果。</span></div>
-      <div class="card">
-        <div class="bm-param"><label>concurrent</label><div style="display:flex;align-items:center;"><input type="number" id="m_conc" value="2" min="1" max="6" oninput="genMultiBM()"><span class="param-desc">同時掃幾區（建議2）</span></div></div>
-        <div class="bm-param"><label>interval</label><div style="display:flex;align-items:center;"><input type="number" id="m_int" value="4000" min="500" step="500" oninput="genMultiBM()"><span class="param-desc">每輪間隔 ms（建議4000）</span></div></div>
-        <div class="bm-param"><label>adWait</label><div style="display:flex;align-items:center;"><input type="number" id="m_ad" value="30" min="5" max="300" oninput="genMultiBM()"><span class="param-desc">AD 等待秒數</span></div></div>
-      </div>
-      <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-top:16px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
-          <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">產生結果 · 存入書籤網址欄</span>
-          <button class="copy-btn" onclick="copyBox('out-multi-bm',this)" id="btn-multi-bm">複製</button>
-        </div>
-        <div id="out-multi-bm" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 共用座位篩選器（所有 tab 共用） -->
+  <!-- SOP -->
   <div class="section">
-    <div class="section-title">🗺️ 座位區域篩選器（共用）</div>
+    <div class="section-title">📋 使用 SOP · Desktop</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">登入 NOL World 並進入購票頁面</div>
+          <div class="step-desc">確認已登入帳號，進入演唱會購票頁面，等待排隊進場。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">選擇日期與時間</div>
+          <div class="step-desc">進入後選擇你想要的場次，日期點選時間後按 Next。</div>
+          <div class="step-tip">⚡ 日期選好後先不要急著下一步，先準備好腳本</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">出現驗證碼時手動輸入</div>
+          <div class="step-desc">進入座位頁面前可能出現「Secure Booking」驗證碼，需手動輸入圖片中的英文字母，完成後按 Submit。</div>
+          <div class="step-warn">⚠️ 驗證碼無法自動化，請自己看圖輸入，輸錯可重新整理</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">開啟 Chrome 開發者工具</div>
+          <div class="step-desc">進入座位選擇頁面後，按 <code>F12</code> 開啟 DevTools，點選上方 <code>Console</code> 分頁。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">複製腳本並貼到 Console 執行</div>
+          <div class="step-desc">點下方「複製腳本」按鈕，貼到 Console 輸入欄，按 <code>Enter</code> 執行。右下角出現計時器和停止按鈕即代表啟動成功。</div>
+          <div class="step-tip">💡 腳本會自動逐區掃描，找到座位立刻點擊送出。若遇到 Access Denied，腳本會自動暫停 30 秒後繼續。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">等待通知，搶到後立刻付款</div>
+          <div class="step-desc">搶到座位後電腦會響鈴並彈出通知，立刻前往付款頁面完成購票。</div>
+          <div class="step-warn">⚠️ 座位鎖定有時效限制，收到通知請立刻付款！</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- 輸出 AREAS -->
+  <!-- Script -->
+  <div class="section">
+    <div class="section-title">💻 搶票腳本 · Desktop</div>
+    <div class="script-box">
+      <div class="script-header">
+        <div class="script-dots">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div class="script-label" id="scriptLabel">載入中...</div>
+        <button class="copy-btn" onclick="copyScript(this)" id="copyScriptBtn" disabled>複製腳本</button>
+      </div>
+      <div class="script-code" id="scriptCode"><div class="script-loading">⏳ 載入腳本中...</div></div>
+    </div>
+  </div>
+
+  <!-- Seat Zones Table -->
+  <div class="section">
+    <div class="section-title">🗺️ 座位區域篩選器</div>
+
+    <!-- Output (visible in Desktop, read by iOS) -->
     <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
-        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">已勾選 <strong id="selectedCount" style="color:var(--text);">0</strong> 區 · 此結果自動帶入下方所有腳本</span>
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">已勾選 <strong id="selectedCount" style="color:var(--text);">0</strong> 區 · 複製後貼入 AREAS</span>
         <button class="copy-btn" onclick="copyAreas(this)">複製 AREAS</button>
       </div>
       <div id="areasOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:11px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
     </div>
+
+    <!-- Filters -->
     <div class="filter-panel" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px;">
       <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
         <div>
@@ -448,10 +452,394 @@
     </div>
   </div>
 
-</div>
+  </div><!-- end tab-desktop -->
 
+  <!-- iOS Tab -->
+  <div class="tab-content" id="tab-ios">
+
+  <!-- iOS SOP -->
+  <div class="section">
+    <div class="section-title">📋 使用 SOP · iOS / iPad</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">第一次使用：儲存 Bookmarklet</div>
+          <div class="step-desc">先隨便把任何網頁加入書籤，然後<strong>編輯</strong>該書籤，把名稱改成「搶票」，網址換成下方產生的 Bookmarklet 內容。</div>
+          <div class="step-tip">💡 之後每次搶票只要點這個書籤就能啟動，不需要重複存</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">登入 NOL World 並進入購票頁面</div>
+          <div class="step-desc">使用 Safari 登入帳號，進入演唱會購票頁面，等待排隊進場。</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">選擇日期與時間</div>
+          <div class="step-desc">選好場次日期和時間後按 Next。</div>
+          <div class="step-tip">⚡ 進入座位頁面前先準備好，確認書籤在手</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">出現驗證碼時手動輸入</div>
+          <div class="step-desc">手動輸入圖片中的英文字母，完成後按 Submit。</div>
+          <div class="step-warn">⚠️ 驗證碼無法自動化，請自己看圖輸入</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">進入座位頁面後點「搶票」書籤</div>
+          <div class="step-desc">點擊網址列旁的書籤圖示，找到「搶票」書籤點擊。跳出確認視窗後按確定，右下角出現計時器即代表啟動成功。</div>
+          <div class="step-tip">💡 點確定的動作會解鎖 iOS 音效，搶到票時會響鈴</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <div class="step-title">等待通知，搶到後立刻付款</div>
+          <div class="step-desc">搶到座位後會響鈴並彈出通知，立刻前往付款頁面完成購票。</div>
+          <div class="step-warn">⚠️ 座位鎖定有時效限制，收到通知請立刻付款！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookmarklet Generator -->
+  <div class="section">
+    <div class="section-title">🔖 Bookmarklet 產生器</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
+        填好參數後，複製下方結果存進書籤網址欄。<br>
+        <span style="color:var(--gold);">areas 會自動帶入座位篩選器的結果。</span>
+      </div>
+      <div style="background:#080810;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">
+        目前已勾選 <strong id="iosSelectedCount" style="color:var(--text);">0</strong> 區
+        <span style="color:var(--border);margin:0 8px;">·</span>
+        <span style="font-size:10px;">請記得確認區域跟參數</span>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:8px;">腳本來源</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;background:#080810;border:1px solid var(--border);border-radius:8px;padding:6px 12px;">
+            <input type="radio" name="bmScript" value="seat/ios/script.js" checked style="accent-color:var(--accent);">
+            <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--text);">seat/ios</span>
+            <span style="font-size:10px;color:var(--muted);">搶票</span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <div class="bm-param"><label>scans_per_area</label><div style="display:flex;align-items:center;"><input type="number" id="bm_scans" value="2" min="1" max="10" oninput="generateBM()"><span class="param-desc">同區掃幾次（1=最快換區）</span></div></div>
+        <div class="bm-param"><label>scan_interval</label><div style="display:flex;align-items:center;"><input type="number" id="bm_interval" value="300" min="100" max="5000" oninput="generateBM()"><span class="param-desc">掃描間隔 ms（300=0.3秒）</span></div></div>
+        <div class="bm-param"><label>no_seat_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="bm_noseat" value="3" min="1" max="20" oninput="generateBM()"><span class="param-desc">沒座位換區次數（3≈0.9秒）</span></div></div>
+        <div class="bm-param"><label>whitepage_attempts</label><div style="display:flex;align-items:center;"><input type="number" id="bm_white" value="16" min="1" max="50" oninput="generateBM()"><span class="param-desc">白屏超時次數（16≈4.8秒）</span></div></div>
+        <div class="bm-param"><label>access_denied_wait</label><div style="display:flex;align-items:center;"><input type="number" id="bm_ad" value="30" min="5" max="300" oninput="generateBM()"><span class="param-desc">AD 等待秒數（30=30秒）</span></div></div>
+      </div>
+    </div>
+    <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">產生結果 · 複製後存入書籤網址欄</span>
+        <button class="copy-btn" onclick="copyBM(this)" id="copyBMBtn">複製</button>
+      </div>
+      <div id="bmOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;min-height:40px;"></div>
+    </div>
+  </div>
+
+  <!-- iOS Seat Zones Table -->
+  <div class="section">
+    <div class="section-title">🗺️ 座位區域篩選器</div>
+
+    <!-- Filters -->
+    <div class="filter-panel" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:16px;">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">票種</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'type','SC')" style="accent-color:#a855f7;width:15px;height:15px;"><span style="color:#a855f7;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">SC</span><span style="color:var(--muted);font-size:11px;">Sound Check</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'type','GR')" style="accent-color:#5cfc8a;width:15px;height:15px;"><span style="color:#5cfc8a;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GR</span><span style="color:var(--muted);font-size:11px;">General R</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'type','GS')" style="accent-color:#5cb8fc;width:15px;height:15px;"><span style="color:#5cb8fc;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">GS</span><span style="color:var(--muted);font-size:11px;">General S</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'type','TEST')" style="accent-color:#f5c518;width:15px;height:15px;"><span style="color:#f5c518;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;">TEST</span><span style="color:var(--muted);font-size:11px;">&TEAM</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">樓層</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'floor','地面')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">地面</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'floor','2F')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">2F</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'floor','3F')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">3F</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'floor','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">方位</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','E 東')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">E 東</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','N 北')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N 北</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','W 西')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">W 西</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'dir','S 南')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">S 南</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'dir','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">視野</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','正常')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">正常</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#f59e0b;font-size:12px;">⚠️ 受阻</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'view','部分受阻')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:#fb923c;font-size:12px;">△ 部分受阻</span></label>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;"></div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:10px;letter-spacing:1px;">座位數</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','<500')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">&lt; 500</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','500~1000')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">500 ~ 1000</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','1000~1500')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">1000 ~ 1500</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" checked onchange="iosToggleFilter(this,'seats','1500+')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">1500 +</span></label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" onchange="iosToggleFilter(this,'seats','N/A')" style="accent-color:var(--accent);width:15px;height:15px;"><span style="color:var(--text);font-size:12px;">N/A</span></label>
+          </div>
+        </div>
+        <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-self:flex-end;">
+          <button onclick="iosFilterAll()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;white-space:nowrap;">全選篩選</button>
+          <button onclick="iosFilterNone()" style="background:var(--card);border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;white-space:nowrap;">全消篩選</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="background:#0f0f1a;border-bottom:1px solid var(--border);">
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">區號</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">票種</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">樓層</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">方位</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">座位數</th>
+            <th style="padding:10px 16px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);font-weight:400;">視野</th>
+          </tr>
+        </thead>
+        <tbody id="iosZoneTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  </div><!-- end tab-ios -->
+
+  <!-- Flash Tab -->
+  <div class="tab-content" id="tab-flash">
+
+  <div class="section">
+    <div class="section-title">⚡ 閃電模式說明</div>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:14px;font-size:13px;color:var(--muted);line-height:1.8;">
+        <div>⚡ <strong style="color:var(--text);">閃電模式</strong>是手動輔助版本，適合清票或大量放票的情境。</div>
+        <div>🖱️ <strong style="color:var(--text);">你負責</strong>：手動切換座位區，觀察哪個區有機會</div>
+        <div>🤖 <strong style="color:var(--text);">腳本負責</strong>：每 300ms 偵測當前區域有沒有可選座位，有就立刻點擊送出</div>
+        <div>✅ 送出後偵測是否到達付款頁，2 秒內未到達自動暫停，點按鈕繼續</div>
+        <div>🧩 遇到 CAPTCHA、Access Denied 請自行處理，腳本繼續等待</div>
+        <div style="background:rgba(245,197,24,0.1);border:1px solid rgba(245,197,24,0.3);border-radius:8px;padding:10px 14px;color:var(--gold);">
+          ⚠️ 沒有 AREAS 參數，也不會自動換區，純粹閃電偵測點擊
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔖 Flash Bookmarklet</div>
+    <div style="background:#080810;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0f0f1a;border-bottom:1px solid var(--border);">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">複製後存入書籤網址欄，進入座位頁後點擊啟動</span>
+        <button class="copy-btn" onclick="copyFlashBM(this)">複製</button>
+      </div>
+      <div id="flashBMOutput" style="padding:14px 16px;font-family:'Space Mono',monospace;font-size:10px;color:#a0a0c0;line-height:1.8;word-break:break-all;"></div>
+    </div>
+  </div>
+
+  </div><!-- end tab-flash -->
+
+</div><!-- end container -->
+
+<footer style="text-align:center;padding:40px 0;color:var(--muted);font-size:12px;font-family:'Space Mono',monospace;">NEG NEG 工具 · 僅供個人使用 · 祝順利 💜</footer>
 <script>
-// ════════ 共用座位資料（單一來源） ════════
+fetch('seat/desktop/script.js?t=' + Date.now())
+  .then(r => r.text())
+  .then(code => {
+    document.getElementById('scriptCode').innerText = code;
+    document.getElementById('scriptLabel').innerText = 'seat/desktop/script.js · 最新版本';
+    document.getElementById('copyScriptBtn').disabled = false;
+  })
+  .catch(() => {
+    document.getElementById('scriptCode').innerText = '⚠️ 無法載入腳本，請確認 seat/desktop/script.js 已上傳至 repo';
+    document.getElementById('scriptLabel').innerText = '載入失敗';
+  });
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copyFlashBM(btn) {
+  const bm = "javascript:(function(){fetch('https://raw.githubusercontent.com/Abby1204/negneg-tool/main/seat/ios/manual.js?t='+Date.now()).then(function(r){return r.text();}).then(function(c){eval(c);}).catch(function(){alert('fail');});})();";
+  navigator.clipboard.writeText(bm).then(()=>{
+    btn.innerText='✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.innerText='複製';btn.classList.remove('copied');},2000);
+  });
+}
+
+// 顯示 Flash BM
+document.getElementById('flashBMOutput').innerText = "javascript:(function(){fetch('https://raw.githubusercontent.com/Abby1204/negneg-tool/main/seat/ios/manual.js?t='+Date.now()).then(function(r){return r.text();}).then(function(c){eval(c);}).catch(function(){alert('fail');});})();";
+
+function generateBM() {
+  const areas = window._iosAreas || '';
+  if(!areas) {
+    document.getElementById('bmOutput').innerText = '（目前無符合篩選條件的區域）';
+    document.getElementById('copyBMBtn').disabled = true;
+    return;
+  }
+  const script = document.querySelector('input[name="bmScript"]:checked')?.value || 'seat/ios/script.js';
+  const scans = document.getElementById('bm_scans')?.value || 2;
+  const interval = document.getElementById('bm_interval')?.value || 300;
+  const noseat = document.getElementById('bm_noseat')?.value || 3;
+  const white = document.getElementById('bm_white')?.value || 16;
+  const ad = document.getElementById('bm_ad')?.value || 30;
+  const bm = `javascript:(function(){window.NEGNEG_CONFIG={areas:${areas},scans_per_area:${scans},scan_interval:${interval},no_seat_attempts:${noseat},whitepage_attempts:${white},access_denied_wait:${ad}};fetch('https://raw.githubusercontent.com/Abby1204/negneg-tool/main/${script}?t='+Date.now()).then(r=>r.text()).then(code=>eval(code)).catch(e=>alert('載入失敗'));})();`;
+  document.getElementById('bmOutput').innerText = bm;
+  document.getElementById('copyBMBtn').disabled = false;
+}
+
+function copyBM(btn) {
+  const text = document.getElementById('bmOutput').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerText = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerText = '複製'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// 監聽腳本來源變更
+document.querySelectorAll('input[name="bmScript"]').forEach(r => r.addEventListener('change', generateBM));
+
+function copyScript(btn) {
+  const code = document.getElementById('scriptCode').innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.innerText = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerText = '複製腳本'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── iOS 座位篩選器（獨立）──
+const iosActiveFilters = {
+  type: new Set(['SC','GR','GS']),
+  floor: new Set(['地面','2F','3F']),
+  dir:  new Set(['E 東','N 北','W 西','S 南']),
+  view: new Set(['正常','受阻','部分受阻']),
+  seats: new Set(['<500','500~1000','1000~1500','1500+','N/A']),
+};
+
+function iosBuildTable() {
+  const tbody = document.getElementById('iosZoneTableBody');
+  tbody.innerHTML = '';
+  ZONES.forEach(({zone,type,floor,dir}) => {
+    const v = getView(zone);
+    const sr = getSeatRange(zone);
+    const seatNum = SEATS[zone] ? SEATS[zone].toLocaleString() : '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-family:'Space Mono',monospace;font-weight:700;">${zone}</td>
+      <td><span style="color:${TYPE_COLOR[type]};font-family:'Space Mono',monospace;font-size:11px;font-weight:700;">${type}</span></td>
+      <td style="color:var(--muted);font-size:12px;">${floor}</td>
+      <td style="color:var(--muted);font-size:12px;">${dir}</td>
+      <td style="color:var(--muted);font-size:12px;text-align:right;padding-right:20px;">${seatNum}</td>
+      ${viewCell(zone)}
+    `;
+    tr.dataset.type = type;
+    tr.dataset.floor = floor;
+    tr.dataset.dir = dir;
+    tr.dataset.zone = zone;
+    tr.dataset.view = v;
+    tr.dataset.seats = sr;
+    if(!iosActiveFilters.type.has(type)||!iosActiveFilters.floor.has(floor)||!iosActiveFilters.dir.has(dir)||!iosActiveFilters.view.has(v)||!iosActiveFilters.seats.has(sr)) tr.classList.add('hidden');
+    tbody.appendChild(tr);
+  });
+  iosUpdateOutput();
+}
+
+function iosToggleFilter(cb, filterType, val) {
+  if(cb.checked){
+    iosActiveFilters[filterType].add(val);
+    if(filterType==='type'&&val==='TEST'){
+      iosActiveFilters.floor.add('N/A');
+      iosActiveFilters.dir.add('N/A');
+      document.querySelectorAll('#tab-ios .filter-panel input[type=checkbox]').forEach(c=>{
+        if(c.closest('label')?.innerText.trim()==='N/A') c.checked=true;
+      });
+    }
+  } else {
+    iosActiveFilters[filterType].delete(val);
+  }
+  iosApplyFilters();
+}
+
+function iosFilterAll() {
+  document.querySelectorAll('#tab-ios .filter-panel input[type=checkbox]').forEach(cb=>{
+    const label=cb.closest('label')?.innerText||'';
+    if(label.includes('TEST')||label.trim()==='N/A') cb.checked=false;
+    else cb.checked=true;
+  });
+  iosActiveFilters.type  = new Set(['SC','GR','GS']);
+  iosActiveFilters.floor = new Set(['地面','2F','3F']);
+  iosActiveFilters.dir   = new Set(['E 東','N 北','W 西','S 南']);
+  iosActiveFilters.view  = new Set(['正常','受阻','部分受阻']);
+  iosActiveFilters.seats = new Set(['<500','500~1000','1000~1500','1500+','N/A']);
+  iosApplyFilters();
+}
+
+function iosFilterNone() {
+  document.querySelectorAll('#tab-ios .filter-panel input[type=checkbox]').forEach(cb=>cb.checked=false);
+  iosActiveFilters.type  = new Set();
+  iosActiveFilters.floor = new Set();
+  iosActiveFilters.dir   = new Set();
+  iosActiveFilters.view  = new Set();
+  iosActiveFilters.seats = new Set();
+  iosApplyFilters();
+}
+
+function iosApplyFilters() {
+  document.querySelectorAll('#iosZoneTableBody tr').forEach(row=>{
+    const show = iosActiveFilters.type.has(row.dataset.type)
+      && iosActiveFilters.floor.has(row.dataset.floor)
+      && iosActiveFilters.dir.has(row.dataset.dir)
+      && iosActiveFilters.view.has(row.dataset.view)
+      && iosActiveFilters.seats.has(row.dataset.seats);
+    row.classList.toggle('hidden',!show);
+  });
+  iosUpdateOutput();
+}
+
+function iosUpdateOutput() {
+  const zones=[];
+  document.querySelectorAll('#iosZoneTableBody tr:not(.hidden)').forEach(row=>{
+    zones.push("'"+row.dataset.zone+"'");
+  });
+  document.getElementById('iosSelectedCount').innerText=zones.length;
+  window._iosAreas = zones.length ? `[${zones.join(',')}]` : null;
+  generateBM();
+}
+
 const OBSTRUCTED = new Set([
   '022','026','027','030','002','003','006','007','008','013',
   '062','066','067','070','043','044','047','048','049','052',
@@ -464,6 +852,7 @@ const PARTIAL = new Set([
   '225','116','121','407','413','304','332','334',
   '262','267','152','340','370',
 ]);
+
 function getView(zone) {
   if(PARTIAL.has(zone)) return '部分受阻';
   if(OBSTRUCTED.has(zone)) return '受阻';
@@ -475,11 +864,12 @@ function viewCell(zone) {
   if(v==='部分受阻') return `<td style="font-size:11px;color:#fb923c;">△ 部分受阻</td>`;
   return `<td style="font-size:11px;color:var(--muted);">-</td>`;
 }
+
 const SEATS = {
-  '002':900,'003':348,'004':347,'005':107,'007':154,'008':154,'009':319,'010':319,'011':265,'012':109,
-  '022':290,'023':252,'024':648,'026':211,'027':352,'028':357,'029':459,'030':238,
-  '042':238,'043':144,'044':348,'045':347,'047':154,'048':154,'049':290,'050':319,'051':319,'052':109,
-  '062':109,'063':252,'064':648,'066':352,'067':352,'068':357,'069':459,'070':238,
+  '002':900,'003':348,'004':347,'005':107,'007':144,'008':154,'009':319,'010':319,'011':265,'012':109,
+  '022':290,'023':252,'024':648,'026':211,'027':352,'028':357,'029':459,'030':357,
+  '042':238,'043':144,'044':348,'045':347,'047':107,'048':154,'049':290,'050':319,'051':319,'052':265,
+  '062':109,'063':252,'064':648,'066':211,'067':352,'068':357,'069':459,'070':357,
   '116':900,'117':900,'118':900,'119':900,'120':900,'121':876,'122':409,
   '152':656,'153':1457,'154':1549,'155':1520,'156':1541,'157':1489,'158':1305,
   '223':1071,'224':827,'225':827,'226':827,'227':818,'228':791,'229':791,'230':791,'231':713,
@@ -489,6 +879,7 @@ const SEATS = {
   '407':809,'408':809,'409':809,'410':809,'411':845,'412':845,'413':845,'414':845,'415':1068,
   '442':1284,'443':927,'444':866,'445':649,'446':942,'447':707,'448':793,'449':975,'450':1180,'451':1459,
 };
+
 function getSeatRange(zone) {
   const s = SEATS[zone];
   if(!s) return 'N/A';
@@ -497,6 +888,7 @@ function getSeatRange(zone) {
   if(s < 1500) return '1000~1500';
   return '1500+';
 }
+
 const ZONES = [
   // SC 地面 E東
   ...['002','003','004','005','008','009','010','011'].map(z=>({zone:z,type:'SC',floor:'地面',dir:'E 東'})),
@@ -524,9 +916,8 @@ const ZONES = [
   // TEST
   ...['308','309','310','311','312','313','314'].map(z=>({zone:z,type:'TEST',floor:'N/A',dir:'N/A'})),
 ];
-const TYPE_COLOR = {'SC':'#a855f7','GR':'#5cfc8a','GS':'#5cb8fc','TEST':'#f5c518'};
 
-// ════════ 單一共用篩選器 ════════
+const TYPE_COLOR = {'SC':'#a855f7','GR':'#5cfc8a','GS':'#5cb8fc','TEST':'#f5c518'};
 const activeFilters = {
   type:  new Set(['SC','GR','GS']),
   floor: new Set(['地面','2F','3F']),
@@ -534,13 +925,13 @@ const activeFilters = {
   view:  new Set(['正常','受阻','部分受阻']),
   seats: new Set(['<500','500~1000','1000~1500','1500+','N/A']),
 };
-let currentAreas = null; // 形如 ['004','005']
 
 function buildTable() {
   const tbody = document.getElementById('zoneTableBody');
   tbody.innerHTML = '';
   ZONES.forEach(({zone,type,floor,dir}) => {
-    const v = getView(zone), sr = getSeatRange(zone);
+    const v = getView(zone);
+    const sr = getSeatRange(zone);
     const seatNum = SEATS[zone] ? SEATS[zone].toLocaleString() : '-';
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -549,42 +940,59 @@ function buildTable() {
       <td style="color:var(--muted);font-size:12px;">${floor}</td>
       <td style="color:var(--muted);font-size:12px;">${dir}</td>
       <td style="color:var(--muted);font-size:12px;text-align:right;padding-right:20px;">${seatNum}</td>
-      ${viewCell(zone)}`;
-    tr.dataset.type=type; tr.dataset.floor=floor; tr.dataset.dir=dir;
-    tr.dataset.zone=zone; tr.dataset.view=v; tr.dataset.seats=sr;
+      ${viewCell(zone)}
+    `;
+    tr.dataset.type = type;
+    tr.dataset.floor = floor;
+    tr.dataset.dir = dir;
+    tr.dataset.zone = zone;
+    tr.dataset.view = v;
+    tr.dataset.seats = sr;
     tbody.appendChild(tr);
   });
   applyFilters();
 }
-function toggleFilter(cb, ft, val) {
+
+function toggleFilter(cb, filterType, val) {
   if(cb.checked){
-    activeFilters[ft].add(val);
-    if(ft==='type'&&val==='TEST'){
-      activeFilters.floor.add('N/A'); activeFilters.dir.add('N/A');
-      document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(c=>{
+    activeFilters[filterType].add(val);
+    if(filterType==='type'&&val==='TEST'){
+      activeFilters.floor.add('N/A');
+      activeFilters.dir.add('N/A');
+      document.querySelectorAll('#tab-desktop .filter-panel input[type=checkbox]').forEach(c=>{
         if(c.closest('label')?.innerText.trim()==='N/A') c.checked=true;
       });
     }
-  } else { activeFilters[ft].delete(val); }
+  } else {
+    activeFilters[filterType].delete(val);
+  }
   applyFilters();
 }
+
 function filterAll() {
-  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb=>{
+  document.querySelectorAll('#tab-desktop .filter-panel input[type=checkbox]').forEach(cb=>{
     const label=cb.closest('label')?.innerText||'';
-    cb.checked = !(label.includes('TEST')||label.trim()==='N/A');
+    if(label.includes('TEST')||label.trim()==='N/A') cb.checked=false;
+    else cb.checked=true;
   });
-  activeFilters.type=new Set(['SC','GR','GS']);
-  activeFilters.floor=new Set(['地面','2F','3F']);
-  activeFilters.dir=new Set(['E 東','N 北','W 西','S 南']);
-  activeFilters.view=new Set(['正常','受阻','部分受阻']);
-  activeFilters.seats=new Set(['<500','500~1000','1000~1500','1500+','N/A']);
+  activeFilters.type  = new Set(['SC','GR','GS']);
+  activeFilters.floor = new Set(['地面','2F','3F']);
+  activeFilters.dir   = new Set(['E 東','N 北','W 西','S 南']);
+  activeFilters.view  = new Set(['正常','受阻','部分受阻']);
+  activeFilters.seats = new Set(['<500','500~1000','1000~1500','1500+','N/A']);
   applyFilters();
 }
+
 function filterNone() {
-  document.querySelectorAll('.filter-panel input[type=checkbox]').forEach(cb=>cb.checked=false);
-  for(const k in activeFilters) activeFilters[k]=new Set();
-  applyFilters();
+  document.querySelectorAll('#tab-desktop .filter-panel input[type=checkbox]').forEach(cb=>cb.checked=false);
+  activeFilters.type  = new Set();
+  activeFilters.floor = new Set();
+  activeFilters.dir   = new Set();
+  activeFilters.view  = new Set();
+  activeFilters.seats = new Set();
+  updateOutput();
 }
+
 function applyFilters() {
   document.querySelectorAll('#zoneTableBody tr').forEach(row=>{
     const show = activeFilters.type.has(row.dataset.type)
@@ -596,90 +1004,33 @@ function applyFilters() {
   });
   updateOutput();
 }
+
 function updateOutput() {
-  const zones=[];
-  document.querySelectorAll('#zoneTableBody tr:not(.hidden)').forEach(row=>zones.push(row.dataset.zone));
-  document.getElementById('selectedCount').innerText = zones.length;
-  currentAreas = zones.length ? zones : null;
-  document.getElementById('areasOutput').innerText = zones.length
-    ? `[${zones.map(z=>"'"+z+"'").join(',')}]` : '（目前無符合篩選條件的區域）';
-  // 連動更新兩個 bookmarklet 產生器
-  genClassicBM(); genMultiBM();
+  const zones = [];
+  document.querySelectorAll('#zoneTableBody tr:not(.hidden)').forEach(row => {
+    zones.push("'"+row.dataset.zone+"'");
+  });
+  const count = zones.length;
+  document.getElementById('selectedCount').innerText = count;
+  document.getElementById('iosSelectedCount').innerText = count;
+  document.getElementById('areasOutput').innerText = count
+    ? `[${zones.join(',')}]`
+    : '（目前無符合篩選條件的區域）';
+  if(count) generateBM();
 }
+
 function copyAreas(btn) {
   const text = document.getElementById('areasOutput').innerText;
   if(text.includes('無符合')) return;
-  navigator.clipboard.writeText(text).then(()=>flash(btn,'複製 AREAS'));
-}
-function areasStr(){ return currentAreas ? `[${currentAreas.map(z=>"'"+z+"'").join(',')}]` : ''; }
-
-// ════════ 兩層 Tab 切換 ════════
-let curFunc='classic', curPlat='desktop';
-function switchFunc(f){
-  curFunc=f;
-  document.querySelectorAll('.func-tab').forEach(b=>b.classList.toggle('active',b.dataset.func===f));
-  document.getElementById('badge-classic').style.display = f==='classic'?'flex':'none';
-  document.getElementById('badge-multi').style.display   = f==='multi'?'flex':'none';
-  refreshPanes();
-}
-function switchPlat(p){
-  curPlat=p;
-  document.querySelectorAll('.plat-tab').forEach(b=>b.classList.toggle('active',b.dataset.plat===p));
-  refreshPanes();
-}
-function refreshPanes(){
-  document.querySelectorAll('.out-pane').forEach(pane=>{
-    pane.style.display = (pane.dataset.func===curFunc && pane.dataset.plat===curPlat) ? 'block' : 'none';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.innerText = '✅ 已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerText = '複製 AREAS'; btn.classList.remove('copied'); }, 2000);
   });
 }
 
-// ════════ 桌機腳本載入（從 GitHub 顯示） ════════
-function loadScript(key, path){
-  fetch(path+'?t='+Date.now()).then(r=>r.text()).then(code=>{
-    document.getElementById('code-'+key).innerText = code;
-    document.getElementById('lbl-'+key).innerText = path.split('/').slice(-3).join('/')+' · 最新版本';
-    document.getElementById('btn-'+key).disabled = false;
-  }).catch(()=>{
-    document.getElementById('code-'+key).innerText = '⚠️ 無法載入，請確認 '+path+' 已上傳';
-    document.getElementById('lbl-'+key).innerText = '載入失敗';
-  });
-}
-loadScript('classic-desktop','seat/desktop/script.js');
-loadScript('multi-desktop','multi-seat/desktop/script.js');
-
-function copyScriptBox(key,btn){
-  const code=document.getElementById('code-'+key).innerText;
-  navigator.clipboard.writeText(code).then(()=>flash(btn,'複製腳本'));
-}
-function copyBox(id,btn){
-  const t=document.getElementById(id).innerText;
-  if(!t||t.includes('無符合')||t.includes('請先')) return;
-  navigator.clipboard.writeText(t).then(()=>flash(btn,'複製'));
-}
-function flash(btn,orig){ btn.innerText='✅ 已複製！'; btn.classList.add('copied');
-  setTimeout(()=>{btn.innerText=orig;btn.classList.remove('copied');},2000); }
-
-// ════════ Bookmarklet 產生器 ════════
-function genClassicBM(){
-  const out=document.getElementById('out-classic-bm'); if(!out) return;
-  const a=areasStr();
-  if(!a){ out.innerText='請先在上方篩選器選擇區域'; return; }
-  const s=val('c_scans',2),i=val('c_interval',300),n=val('c_noseat',3),w=val('c_white',16),ad=val('c_ad',30);
-  out.innerText = `javascript:(function(){window.NEGNEG_CONFIG={areas:${a},scans_per_area:${s},scan_interval:${i},no_seat_attempts:${n},whitepage_attempts:${w},access_denied_wait:${ad}};fetch('${GH_JS}/seat/ios/script.js?t='+Date.now()).then(r=>r.text()).then(c=>eval(c)).catch(e=>alert('載入失敗'));})();`;
-}
-function genMultiBM(){
-  const out=document.getElementById('out-multi-bm'); if(!out) return;
-  const a=areasStr();
-  if(!a){ out.innerText='請先在上方篩選器選擇區域'; return; }
-  const c=val('m_conc',2),i=val('m_int',4000),ad=val('m_ad',30);
-  out.innerText = `javascript:(function(){window.NEGNEG_CONFIG={areas:${a},concurrent:${c},interval:${i},adWait:${ad}};fetch('${GH_JS}/multi-seat/ios/script.js?t='+Date.now()).then(r=>r.text()).then(c=>eval(c)).catch(e=>alert('載入失敗'));})();`;
-}
-function val(id,def){ const e=document.getElementById(id); return e?(e.value||def):def; }
-const GH_JS='https://raw.githubusercontent.com/Abby1204/negneg-tool/main';
-
-// ════════ 初始化 ════════
 buildTable();
-refreshPanes();
+iosBuildTable();
 </script>
 </body>
 </html>
